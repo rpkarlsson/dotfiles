@@ -1,20 +1,13 @@
 export ZSH=/Users/rpkn/.oh-my-zsh
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that o-my-zsh is loaded.
-# ZSH_THEME="robbyrussell"
-# ZSH_THEME="avit"
-
 # Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+ DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-COMPLETION_WAITING_DOTS="true"
+# COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -29,14 +22,14 @@ plugins=(git rails docker)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-export PATH="/usr/local/sbin:/usr/local/texlive/2015basic/bin/universal-darwin:$PATH"
-export CLICOLOR=1
+# export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# export PATH="/usr/local/sbin:/usr/local/texlive/2015basic/bin/universal-darwin:$PATH" */
+# export CLICOLOR=1 */
 
 source $ZSH/oh-my-zsh.sh
-source /usr/local/bin/virtualenvwrapper.sh
-source /usr/local/share/chruby/chruby.sh
-source /usr/local/opt/chruby/share/chruby/auto.sh
+# source /usr/local/bin/virtualenvwrapper.sh */
+# source /usr/local/share/chruby/chruby.sh */
+# source /usr/local/opt/chruby/share/chruby/auto.sh */
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -99,4 +92,3 @@ dock() {
 
  # Ruby warning level
  # export RUBYOPT=-w
-
