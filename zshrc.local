@@ -3,4 +3,4 @@ export PATH="$GOPATH/bin:$PATH"
 export PATH="/usr/local/sbin:/usr/local/texlive/2015basic/bin/universal-darwin:$PATH"
 export ZSH=/Users/rpkn/.oh-my-zsh
 
-source $ZSH/oh-my-zsh.sh
+#source $ZSH/oh-my-zsh.sh
