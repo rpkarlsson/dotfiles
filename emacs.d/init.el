@@ -5,23 +5,24 @@
 (package-initialize)
 
 (when (not package-archive-contents)
-    (package-refresh-contents))
+  (package-refresh-contents))
 (defvar my-packages
   '(ace-window
-    arjen-grey-theme
-    cider
-    clojure-mode
-    clojure-mode-extra-font-locking
-    editorconfig
-    evil
-    evil-surround
-    ido-ubiquitous
-    magit
-    org
-    paredit
-    projectile
-    smex
-    tagedit))
+     arjen-grey-theme
+     cider
+     clojure-mode
+     clojure-mode-extra-font-locking
+     editorconfig
+     evil
+     evil-magit
+     evil-surround
+     ido-ubiquitous
+     magit
+     org
+     paredit
+     projectile
+     smex
+     tagedit))
 
 
 ;; On OS X, an Emacs instance started from the graphical user
@@ -34,7 +35,7 @@
 ;; https://github.com/purcell/exec-path-from-shell
 (if (eq system-type 'darwin)
     (add-to-list 'my-packages 'exec-path-from-shell))
-1
+
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
