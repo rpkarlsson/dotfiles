@@ -593,3 +593,14 @@ No bell
 #+end_src
 
 #+end_src
+
+* Window control
+
+Make window resizing alot more convinient
+
+#+begin_src
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
+#+end_src
