@@ -599,7 +599,7 @@ No bell
 
 Make window resizing alot more convinient
 
-#+begin_src
+#+begin_src emacs-lisp
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
