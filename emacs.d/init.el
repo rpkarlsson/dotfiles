@@ -26,6 +26,10 @@
      smex
      tagedit))
 
+
+(if (eq system-type 'darwin)
+  (add-to-list 'my-packages 'exec-path-from-shell))
+
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
