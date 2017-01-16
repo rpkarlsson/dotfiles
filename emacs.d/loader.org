@@ -308,6 +308,7 @@ Font with ligatures read more at https://github.com/tonsky/FiraCode
 
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
 (add-hook 'js-mode-hook 'subword-mode)
 (add-hook 'html-mode-hook 'subword-mode)
 (setq js-indent-level 2)
