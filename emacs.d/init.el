@@ -19,6 +19,7 @@
      evil-magit
      evil-surround
      ido-ubiquitous
+     ido-vertical-mode
      magit
      org
      paredit

@@ -153,7 +153,6 @@ Java classes (e.g. JavaClassName)
             (define-clojure-indent (fact 1))
             (define-clojure-indent (facts 1))))
 #+end_src
-
 ** Cider
 
 #+begin_src emacs-lisp
@@ -210,6 +209,14 @@ Java classes (e.g. JavaClassName)
      (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
 #+end_src
 
+** Clojurescript
+
+ Use Nodejs as the default clojurescript repl
+#+begin_src emacs-lisp
+  '(cider-cljs-lein-repl
+     "(do (require 'cljs.repl.node) (cemerick.piggieback/cljs-repl (cljs.repl.node/repl-env)))")
+#+end_src
+
 * Elisp
 
 Automatically load paredit when editing a lisp file
@@ -236,6 +243,11 @@ http://www.emacswiki.org/emacs/ElDoc
 
 * Evil-mode
 
+Fix to make tab expansion work in orgmode.
+#+BEGIN_SRC emacs-lisp
+(setq evil-want-C-i-jump nil)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (require 'evil)
   (evil-mode 1)
@@ -243,6 +255,19 @@ http://www.emacswiki.org/emacs/ElDoc
 ;; (require 'evil-surround)
   (global-evil-surround-mode 1)
 #+END_SRC
+
+* Evil-lispy-mode
+
+Modes for reimagining paredit into a more vim like workflow.
+
+https://github.com/abo-abo/lispy
+https://github.com/sp3ctum/evil-lispy
+
+#+begin_src emacs-lisp
+;; (require 'evil-lispy)
+;; (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
+;; (add-hook 'clojure-mode-hook #'evil-lispy-mode)
+#+end_src
 
 * Editorconfig
 
@@ -361,6 +386,16 @@ Go straight to scratch buffer on startup
 (setq inhibit-startup-message t)
 #+end_src
 
+Automatically follow symlinks
+#+begin_src emacs-lisp
+(setq vc-follow-symlinks t)
+#+end_src
+
+Delete trailing whitespace on save
+#+begin_src emacs-lisp
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+#+end_src
+
 * Navigation
 
 
@@ -427,9 +462,18 @@ for selecting buffer and file names
 (ido-ubiquitous-mode 1)
 #+end_src
 
-Shows a list of buffers
+Display IDO vertically for easier reading
+#+begin_src emacs-lisp
+(require 'ido-vertical-mode)
+(ido-mode 1)
+(ido-vertical-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
+#+end_src
+
+Shows a list of buffers and make it use evil
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+(setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
 #+end_src
 
 Enhances M-x to allow easier execution of commands. Provides
@@ -443,9 +487,7 @@ http://www.emacswiki.org/emacs/Smex
 #+end_src
 
 Projectile everywhere!
-
 #+begin_src emacs-lisp
-
 (projectile-global-mode)
 
 #+end_src
@@ -488,10 +530,19 @@ https://github.com/purcell/exec-path-from-shell
    '("PATH")))
 #+END_SRC
 
+* Slime
+
+Sets the slime compiler to use Steelbank common lisp
+#+BEGIN_SRC emacs-lisp
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+#+END_SRC
+
 * UI
 
 #+begin_src emacs-lisp
-(load-theme 'arjen-grey t)
+(if (display-graphic-p)
+  (load-theme 'arjen-grey t)
+  (load-theme 'spacemacs-light t))
 #+end_src
 
 These customizations change the way emacs looks and disable/enable
@@ -604,4 +655,12 @@ Make window resizing alot more convinient
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+#+end_src
+
+* Executable buffers
+
+Make buffers with a shebang executable
+#+begin_src emacs-lisp
+(add-hook 'after-save-hook
+            'executable-make-buffer-file-executable-if-script-p)
 #+end_src
