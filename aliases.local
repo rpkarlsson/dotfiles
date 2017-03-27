@@ -1,3 +1,8 @@
+# Unix
+alias ll="ls -al"
+alias ln="ln -v"
+alias mkdir="mkdir -p"
+alias v="$VISUAL"
 alias e="emacs -nw"
 alias hidden="ls -d .??*"
 alias l="ls -l"
@@ -16,4 +21,3 @@ tmux_attach() {
 dock() {
   docker-machine start default ; docker-machine env default && eval "$(docker-machine env default)"
 }
-

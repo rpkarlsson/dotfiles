@@ -59,6 +59,14 @@ python -m pip install --user certifi
 (prefer-coding-system 'utf-8)
 #+END_SRC
 
+* Load Path
+
+  Add the lib folder to the load path to enable the loading
+of local programs
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lib/")
+#+END_SRC
+
 * Editing
 
 Lisp-friendly hippie expand
@@ -254,6 +262,11 @@ Fix to make tab expansion work in orgmode.
 
 ;; (require 'evil-surround)
   (global-evil-surround-mode 1)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+ (require 'evil-adjust)
+  (evil-adjust)
 #+END_SRC
 
 * Evil-lispy-mode
