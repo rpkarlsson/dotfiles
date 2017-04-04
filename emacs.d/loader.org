@@ -291,6 +291,7 @@ https://github.com/sp3ctum/evil-lispy
 
 * Fira code
 
+
 Font with ligatures read more at https://github.com/tonsky/FiraCode
 
 #+begin_src emacs-lisp
@@ -335,18 +336,33 @@ Font with ligatures read more at https://github.com/tonsky/FiraCode
                         `([,(cdr char-regexp) 0 font-shape-gstring]))))
 #+end_src
 
+* Flycheck
+
+Syntax checking
+
+#+begin_src emacs-lisp
+(add-hook 'after-init-hook #'global-flycheck-mode)
+#+end_src
+
 * Org-mode
+  C-c C-e - export document
 
 #+BEGIN_SRC emacs-lisp
 (setq org-src-fontify-natively t)
 #+END_SRC
+
+* Org-reveal
+
+#+begin_src emacs-lisp
+(require 'ox-reveal)
+#+end_src
 
 * Javascript
 
 
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx$" . js-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx$" . js2-jsx-mode))
 (add-hook 'js-mode-hook 'subword-mode)
 (add-hook 'html-mode-hook 'subword-mode)
 (setq js-indent-level 2)

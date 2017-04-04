@@ -8,6 +8,12 @@ alias hidden="ls -d .??*"
 alias l="ls -l"
 alias t="tmux_new || tmux_attach"
 alias tl="tmux list-sessions"
+alias git-clean-merged="git branch --merged develop | grep -v \"\*\|develop\|release\" | xargs -n 1 git branch -d"
+
+alias cucumber="HELIUM_DEBUG=t HELIUM_SLEEP=3000 ./node_modules/.bin/cucumber.js --require features"
+alias cucumber-phantom="HELIUM_BROWSER=phantomjs ./node_modules/.bin/cucumber.js --require features"
+alias mini-test=".git/hooks/pre-commit"
+alias jbehave="java -jar target/uberjar/jbehave-translator-0.1.0-SNAPSHOT-standalone.jar consoleText.txt >> out.txt && echo '\n\n' >> ./out.txt"
 
 ## FUNCTIONS ##
 tmux_new() {
