@@ -144,8 +144,6 @@ Java classes (e.g. JavaClassName)
 #+end_src
 
 #+begin_src emacs-lisp
-(add-hook 'clojure-mode-hook 'enable-paredit-mode)
-
 (require 'clojure-mode-extra-font-locking)
 
 ;; syntax hilighting for midje
@@ -163,35 +161,48 @@ Java classes (e.g. JavaClassName)
 #+end_src
 ** Cider
 
+Provides minibuffer documentation for the code you're typing into the repl
 #+begin_src emacs-lisp
-;; provides minibuffer documentation for the code you're typing into the repl
-;(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+#+end_src
 
-;; go right to the REPL buffer when it's finished connecting
+Go right to the REPL buffer when it's finished connecting
+#+begin_src emacs-lisp
 (setq cider-repl-pop-to-buffer-on-connect t)
+#+end_src
 
-;; When there's a cider error, show its buffer and switch to it
+When there's a cider error, show its buffer and switch to it
+#+begin_src emacs-lisp
 (setq cider-show-error-buffer t)
-(setq cider-auto-select-error-buffer t)
+;(setq cider-auto-select-error-buffer t)
+#+end_src
 
-;; Where to store the cider history.
+Where to store the cider history.
+#+begin_src emacs-lisp
 (setq cider-repl-history-file "~/.emacs.d/cider-history")
+#+end_src
 
-;; Wrap when navigating history.
+Wrap when navigating history.
+#+begin_src emacs-lisp
 (setq cider-repl-wrap-history t)
+#+end_src
 
-;; enable paredit in your REPL
-;; (add-hook 'cider-repl-mode-hook 'paredit-mode)
+Enable paredit in your REPL
+#+begin_src emacs-lisp
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+#+end_src
 
-;; Use clojure mode for other extensions
+Use clojure mode for other extensions
+#+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
+#+end_src
 
 
-;; key bindings
-;; these help me out with the way I usually develop web apps
+Key bindings
+#+begin_src emacs-lisp
 (defun cider-start-http-server ()
   (interactive)
   (cider-load-current-buffer)
@@ -205,6 +216,12 @@ Java classes (e.g. JavaClassName)
   (interactive)
   (cider-interactive-eval (format "(user/reset)")))
 
+(defun cider-eval-last-sexp-under-cursor (arg)
+  (interactive "p")
+  (forward-char)
+  (cider-eval-last-sexp)
+  (backward-char))
+
 (defun cider-user-ns ()
   (interactive)
   (cider-repl-set-ns "user"))
@@ -214,7 +231,8 @@ Java classes (e.g. JavaClassName)
      (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
-     (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
+     (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)
+     (define-key cider-mode-map (kbd "C-x C-e") 'cider-eval-last-sexp-under-cursor))
 #+end_src
 
 ** Clojurescript
@@ -223,6 +241,15 @@ Java classes (e.g. JavaClassName)
 #+begin_src emacs-lisp
   '(cider-cljs-lein-repl
      "(do (require 'cljs.repl.node) (cemerick.piggieback/cljs-repl (cljs.repl.node/repl-env)))")
+#+end_src
+
+* ClojureScript
+
+#+begin_src emacs-lisp
+(setq cider-cljs-lein-repl
+      "(do (require 'figwheel-sidecar.repl-api)
+           (figwheel-sidecar.repl-api/start-figwheel!)
+           (figwheel-sidecar.repl-api/cljs-repl))")
 #+end_src
 
 * Elisp
