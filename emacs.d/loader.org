@@ -163,7 +163,7 @@ Java classes (e.g. JavaClassName)
 
 Provides minibuffer documentation for the code you're typing into the repl
 #+begin_src emacs-lisp
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 #+end_src
 
 Go right to the REPL buffer when it's finished connecting
@@ -200,6 +200,8 @@ Use clojure mode for other extensions
 (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
 #+end_src
 
+#+RESULTS:
+
 
 Key bindings
 #+begin_src emacs-lisp
@@ -226,8 +228,7 @@ Key bindings
   (interactive)
   (cider-repl-set-ns "user"))
 
-(eval-after-load 'cider
-  '(progn
+(with-eval-after-load 'cider
      (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
@@ -337,7 +338,7 @@ Font with ligatures read more at https://github.com/tonsky/FiraCode
                  (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
                  (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
                  (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
-                 (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+                 ;;(45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
                  ;; commenting this out to avoid
                  ;; error in process filter: Attempt to shape unibyte text
                  ;; when running cider
@@ -578,6 +579,13 @@ Sets the slime compiler to use Steelbank common lisp
 #+END_SRC
 
 * UI
+
+Prettier lambda's and fn's
+#+begin_src emacs-lisp
+(push '(" fn ") prettify-symbols-alist)
+(global-prettify-symbols-mode +1)
+#+end_src
+
 
 #+begin_src emacs-lisp
 (if (display-graphic-p)

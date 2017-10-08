@@ -8,6 +8,7 @@ alias hidden="ls -d .??*"
 alias l="ls -l"
 alias t="tmux_new || tmux_attach"
 alias tl="tmux list-sessions"
+alias batt="pmset -g batt"
 
 ## FUNCTIONS ##
 tmux_new() {
