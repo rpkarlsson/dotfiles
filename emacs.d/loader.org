@@ -338,7 +338,7 @@ Font with ligatures read more at https://github.com/tonsky/FiraCode
                  (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
                  (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
                  (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
-                 ;;(45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+                 (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
                  ;; commenting this out to avoid
                  ;; error in process filter: Attempt to shape unibyte text
                  ;; when running cider
@@ -578,6 +578,33 @@ Sets the slime compiler to use Steelbank common lisp
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "slime"
+  '(progn
+     (slime-setup '(
+                    slime-asdf
+                    slime-autodoc
+                    slime-editing-commands
+                    slime-fancy-inspector
+                    slime-fontifying-fu
+                    slime-fuzzy
+                    slime-indentation
+                    slime-mdot-fu
+                    slime-package-fu
+                    slime-references
+                    slime-repl
+                    slime-sbcl-exts
+                    slime-scratch
+                    slime-xref-browser
+                    ))
+     (slime-autodoc-mode)
+     (setq slime-complete-symbol*-fancy t)
+     (setq slime-complete-symbol-function
+  'slime-fuzzy-complete-symbol)))
+
+(require 'slime)
+#+END_SRC
+
 * UI
 
 Prettier lambda's and fn's
@@ -586,6 +613,9 @@ Prettier lambda's and fn's
 (global-prettify-symbols-mode +1)
 #+end_src
 
+#+begin_src emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+#+end_src
 
 #+begin_src emacs-lisp
 (if (display-graphic-p)
