@@ -1,13 +1,13 @@
 export EDITOR="emacsclient"
 
 # Unix
-alias ll="ls -al"
+alias ll="ls -alh"
 alias ln="ln -v"
 alias mkdir="mkdir -p"
 alias v="$VISUAL"
 alias e="$EDITOR"
 alias hidden="ls -d .??*"
-alias l="ls -l"
+alias l="ls -lh"
 alias t="tmux_new || tmux_attach"
 alias tl="tmux list-sessions"
 alias batt="pmset -g batt"
