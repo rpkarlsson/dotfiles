@@ -134,6 +134,13 @@ Fix weird os x kill error
     (quit nil)))
 #+end_src
 
+* Calendar
+
+Make monday the first day of the week.
+#+begin_src emacs-lisp
+(setq calendar-week-start-day 1)
+#+end_src
+
 * Clojure
 ** General
 
