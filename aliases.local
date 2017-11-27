@@ -1,11 +1,13 @@
+export EDITOR="emacsclient"
+
 # Unix
-alias ll="ls -al"
+alias ll="ls -alh"
 alias ln="ln -v"
 alias mkdir="mkdir -p"
 alias v="$VISUAL"
-alias e="emacs -nw"
+alias e="$EDITOR"
 alias hidden="ls -d .??*"
-alias l="ls -l"
+alias l="ls -lh"
 alias t="tmux_new || tmux_attach"
 alias tl="tmux list-sessions"
 alias git-clean-merged="git branch --merged develop | grep -v \"\*\|develop\|release\" | xargs -n 1 git branch -d"
@@ -14,6 +16,9 @@ alias cucumber="HELIUM_DEBUG=t HELIUM_SLEEP=3000 ./node_modules/.bin/cucumber.js
 alias cucumber-phantom="HELIUM_BROWSER=phantomjs ./node_modules/.bin/cucumber.js --require features"
 alias mini-test=".git/hooks/pre-commit"
 alias jbehave="java -jar target/uberjar/jbehave-translator-0.1.0-SNAPSHOT-standalone.jar consoleText.txt >> out.txt && echo '\n\n' >> ./out.txt"
+alias batt="pmset -g batt"
+alias etags-clojure="find . \! -name '.*' -name '*.clj' | xargs etags --regex='/[ \t\(]*def[a-z]* \([a-z-!]+\)/\1/' --regex='/[ \t\(]*ns \([a-z.]+\)/\1/'
+"
 
 ## FUNCTIONS ##
 tmux_new() {
@@ -26,4 +31,8 @@ tmux_attach() {
 
 dock() {
   docker-machine start default ; docker-machine env default && eval "$(docker-machine env default)"
+}
+
+function lb() {
+    $EDITOR ~/logbook/$(date '+%Y-%m-%d').org
 }

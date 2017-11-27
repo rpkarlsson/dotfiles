@@ -3,3 +3,7 @@ export PATH="$GOPATH/bin:$PATH"
 export PATH="/usr/local/sbin:/usr/local/texlive/2015basic/bin/universal-darwin:$PATH"
 
 export ZSH=$HOME/.oh-my-zsh
+
+#source $ZSH/oh-my-zsh.sh
+
+export PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[blue]%}%c%{$reset_color%}$(git_prompt_info) '

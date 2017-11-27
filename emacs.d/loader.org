@@ -134,6 +134,13 @@ Fix weird os x kill error
     (quit nil)))
 #+end_src
 
+* Calendar
+
+Make monday the first day of the week.
+#+begin_src emacs-lisp
+(setq calendar-week-start-day 1)
+#+end_src
+
 * Clojure
 ** General
 
@@ -163,7 +170,7 @@ Java classes (e.g. JavaClassName)
 
 Provides minibuffer documentation for the code you're typing into the repl
 #+begin_src emacs-lisp
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 #+end_src
 
 Go right to the REPL buffer when it's finished connecting
@@ -200,6 +207,8 @@ Use clojure mode for other extensions
 (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
 #+end_src
 
+#+RESULTS:
+
 
 Key bindings
 #+begin_src emacs-lisp
@@ -226,8 +235,7 @@ Key bindings
   (interactive)
   (cider-repl-set-ns "user"))
 
-(eval-after-load 'cider
-  '(progn
+(with-eval-after-load 'cider
      (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
@@ -593,7 +601,44 @@ Sets the slime compiler to use Steelbank common lisp
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "slime"
+  '(progn
+     (slime-setup '(
+                    slime-asdf
+                    slime-autodoc
+                    slime-editing-commands
+                    slime-fancy-inspector
+                    slime-fontifying-fu
+                    slime-fuzzy
+                    slime-indentation
+                    slime-mdot-fu
+                    slime-package-fu
+                    slime-references
+                    slime-repl
+                    slime-sbcl-exts
+                    slime-scratch
+                    slime-xref-browser
+                    ))
+     (slime-autodoc-mode)
+     (setq slime-complete-symbol*-fancy t)
+     (setq slime-complete-symbol-function
+  'slime-fuzzy-complete-symbol)))
+
+(require 'slime)
+#+END_SRC
+
 * UI
+
+Prettier lambda's and fn's
+#+begin_src emacs-lisp
+(push '(" fn ") prettify-symbols-alist)
+(global-prettify-symbols-mode +1)
+#+end_src
+
+#+begin_src emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+#+end_src
 
 #+begin_src emacs-lisp
 (if (display-graphic-p)
