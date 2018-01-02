@@ -299,6 +299,16 @@ Fix to make tab expansion work in orgmode.
   (global-evil-surround-mode 1)
 #+END_SRC
 
+Evil binds M-. to evil-repeat-pop-next. But I prefer ciders cider-find-var
+so unbind M-. in the evil normal mode.
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "evil-maps"
+  '(progn
+     (define-key evil-normal-state-map  "\M-." 'nil)))
+#+END_SRC
+
+#+RESULTS:
+
 #+BEGIN_SRC emacs-lisp
  (require 'evil-adjust)
   (evil-adjust)
