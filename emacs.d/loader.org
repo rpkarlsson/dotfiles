@@ -759,3 +759,17 @@ Make buffers with a shebang executable
 (add-hook 'after-save-hook
             'executable-make-buffer-file-executable-if-script-p)
 #+end_src
+* Logbook
+
+#+begin_src emacs-lisp
+(defvar logbook/format-string "~/Dropbox/Org/log/%Y-%m-%d.org")
+
+(defun logbook/create ()
+  "Creates a new log entry in the specified path using todays date"
+  (interactive)
+  (destructuring-bind (month day year) (calendar-current-date)
+    (find-file (format-time-string logbook/format-string)))
+  (if (= 0 (buffer-size))
+      (insert (format-time-string "*<%Y-%m-%d>"))))
+
+#+end_src
