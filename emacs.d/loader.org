@@ -382,9 +382,26 @@ Font with ligatures read more at https://github.com/tonsky/FiraCode
 
 * Org-mode
 
-#+BEGIN_SRC emacs-lisp
-(setq org-src-fontify-natively t)
-#+END_SRC
+#+begin_src emacs-lisp
+  (defun org-custom-keys ()
+    "Use n/p instead of arrow keys for moving items since they are unbinded."
+    (local-set-key (kbd "M-n") #'org-metadown)
+    (local-set-key (kbd "M-p") #'org-metaup))
+
+#+end_src
+
+- Makes bullets prettier.
+- Enables auto fill to make text fixed width
+- Runs custom keys
+
+#+begin_src emacs-lisp
+ (add-hook 'org-mode-hook (lambda ()
+                             (org-bullets-mode 1)
+                             (auto-fill-mode 1)
+                             (setq org-src-fontify-natively t)
+                             (org-custom-keys)))
+
+#+end_src
 
 * Javascript
 
@@ -790,4 +807,5 @@ Adds functions to open todays/yestedays log entries
 
 
 (defun logbook/yesterday () (interactive) (logbook/open-day -1))
+
 #+end_src
