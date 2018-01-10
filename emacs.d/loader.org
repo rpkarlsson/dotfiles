@@ -761,15 +761,33 @@ Make buffers with a shebang executable
 #+end_src
 * Logbook
 
-#+begin_src emacs-lisp
-(defvar logbook/format-string "~/Dropbox/Org/log/%Y-%m-%d.org")
+Adds functions to open todays/yestedays log entries
 
-(defun logbook/create ()
+#+begin_src emacs-lisp
+(defvar logbook/path "~/Dropbox/Org/")
+(defvar logbook/postfix ".org")
+
+(defun logbook/open-day (offset)
+  (interactive)
+  (let ((f (lambda (n)
+                  (let ((str (number-to-string n)))
+                    (if (< n 10)
+                        (concat "0" str)
+                        str)))))
+    (destructuring-bind (month day year) (calendar-current-date offset)
+       (find-file
+        (concat logbook/path
+                (format "%s-%s-%s" year (funcall f month) (funcall f day))
+                logbook/postfix)))))
+
+
+(defun logbook/today ()
   "Creates a new log entry in the specified path using todays date"
   (interactive)
-  (destructuring-bind (month day year) (calendar-current-date)
-    (find-file (format-time-string logbook/format-string)))
+  (logbook/open-day 0)
   (if (= 0 (buffer-size))
       (insert (format-time-string "*<%Y-%m-%d>"))))
 
+
+(defun logbook/yesterday () (interactive) (logbook/open-day -1))
 #+end_src
