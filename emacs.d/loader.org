@@ -61,11 +61,17 @@ python -m pip install --user certifi
 
 * Load Path
 
-  Add the lib folder to the load path to enable the loading
+Add the lib folder to the load path to enable the loading
 of local programs
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/lib/")
-#+END_SRC
+#+begin_src emacs-lisp
+ (defvar private-dir "~/.emacs.d/lib/"
+   "Private elisp directory")
+
+(if (file-exists-p private-dir)
+    (progn (add-to-list 'load-path private-dir)
+           (load (concat private-dir "init.el"))))
+
+#+end_src
 
 * Editing
 
@@ -416,7 +422,7 @@ Syntax checking
 * Org-reveal
 
 #+begin_src emacs-lisp
-(require 'ox-reveal)
+;; (require 'ox-reveal)
 #+end_src
 
 * Javascript
