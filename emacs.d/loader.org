@@ -279,6 +279,11 @@ Key bindings
            (figwheel-sidecar.repl-api/cljs-repl))")
 #+end_src
 
+* Dired
+
+#+begin_src emacs-lisp
+(setq dired-listing-switches "-alh")
+#+end_src
 * Elisp
 
 Automatically load paredit when editing a lisp file
@@ -405,7 +410,7 @@ Font with ligatures read more at https://github.com/tonsky/FiraCode
 Syntax checking
 
 #+begin_src emacs-lisp
-(add-hook 'after-init-hook #'global-flycheck-mode)
+; (add-hook 'after-init-hook #'global-flycheck-mode)
 #+end_src
 
 * Org-mode
