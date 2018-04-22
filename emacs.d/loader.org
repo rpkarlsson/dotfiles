@@ -553,7 +553,6 @@ Delete trailing whitespace on save
 (defun loader.org ()
   (interactive)
   (find-file "~/dotfiles-local/emacs.d/loader.org"))
-
 #+end_src
 
 * Navigation
@@ -893,4 +892,8 @@ Adds functions to open todays/yestedays log entries
 
 (defun logbook/yesterday () (interactive) (logbook/open-day -1))
 
+#+end_src
+
+
+#+begin_src emacs-lisp
 #+end_src
