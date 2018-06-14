@@ -1,4 +1,5 @@
-export EDITOR="emacsclient"
+export VISUAL="emacsclient"
+export EDITOR=$VISUAL
 
 # Unix
 alias ll="ls -alh"
