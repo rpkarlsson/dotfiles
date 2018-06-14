@@ -5,7 +5,7 @@ alias ll="ls -alh"
 alias ln="ln -v"
 alias mkdir="mkdir -p"
 alias v="$VISUAL"
-alias e="$EDITOR"
+alias e="$EDITOR ${1:-.}"
 alias hidden="ls -d .??*"
 alias l="ls -lh"
 alias t="tmux_new || tmux_attach"
@@ -17,8 +17,8 @@ alias cucumber-phantom="HELIUM_BROWSER=phantomjs ./node_modules/.bin/cucumber.js
 alias mini-test=".git/hooks/pre-commit"
 alias jbehave="java -jar target/uberjar/jbehave-translator-0.1.0-SNAPSHOT-standalone.jar consoleText.txt >> out.txt && echo '\n\n' >> ./out.txt"
 alias batt="pmset -g batt"
-alias etags-clojure="find . \! -name '.*' -name '*.clj' | xargs etags --regex='/[ \t\(]*def[a-z]* \([a-z-!]+\)/\1/' --regex='/[ \t\(]*ns \([a-z.]+\)/\1/'
-"
+alias etags-clojure="find . \! -name '.*' -name '*.clj' | xargs etags --regex='/[ \t\(]*def[a-z]* \([a-z-!]+\)/\1/' --regex='/[ \t\(]*ns \([a-z.]+\)/\1/'"
+alias wttr="curl wttr.in/vaxjo"
 
 ## FUNCTIONS ##
 tmux_new() {
