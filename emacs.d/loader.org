@@ -350,8 +350,10 @@ Fix to make tab expansion work in orgmode.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
+(setq evil-want-integration nil)
+
 (require 'evil)
-  (evil-mode 1)
+(evil-mode 1)
 
 ;; (require 'evil-surround)
   (global-evil-surround-mode 1)
@@ -370,6 +372,11 @@ so unbind M-. in the evil normal mode.
 #+BEGIN_SRC emacs-lisp
  (require 'evil-adjust)
   (evil-adjust)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; (evil-collection-init)
+
 #+END_SRC
 
 * Evil-lispy-mode
@@ -645,10 +652,17 @@ http://www.emacswiki.org/emacs/Smex
 (global-set-key (kbd "M-x") 'smex)
 #+end_src
 
+* Projectile
+
+#+BEGIN_SRC emacs-lisp
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+END_SRC
+
 Projectile everywhere!
 #+begin_src emacs-lisp
 (projectile-global-mode)
-
 #+end_src
 
 * Keys
@@ -736,9 +750,12 @@ Prettier lambda's and fn's
 #+end_src
 
 #+begin_src emacs-lisp
-(if (display-graphic-p)
-  (load-theme 'arjen-grey t)
-  (load-theme 'spacemacs-light t))
+(when (display-graphic-p)
+  (load-theme 'arjen-grey t))
+
+  ;; (if (display-graphic-p)
+  ;;   (load-theme 'arjen-grey t)
+  ;;   (load-theme 'spacemacs-light t))
 #+end_src
 
 These customizations change the way emacs looks and disable/enable
