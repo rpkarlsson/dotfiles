@@ -1,3 +1,0 @@
-colorscheme nord
-hi Visual term=reverse cterm=reverse guibg=Grey
-let g:syntastic_disabled_filetypes=['java']
