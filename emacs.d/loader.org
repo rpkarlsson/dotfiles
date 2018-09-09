@@ -531,6 +531,6 @@ http://www.emacswiki.org/emacs/Smex
 
 Change <return> to open thing at point in current dired buffer instead of opening a new one.
 #+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'evil-maps
-    (define-key dired-mode-map (kbd "<return>") #'dired-find-alternate-file))
+(evil-define-key 'normal dired-mode-map
+  (kbd "<return>") 'dired-find-alternate-file)
 #+END_SRC
