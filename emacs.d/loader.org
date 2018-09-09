@@ -1,8 +1,6 @@
 * A secure Emacs environment
 
-Great article why
-[[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][Your editor is
-malware]]. The following basically sets up the configuration to adhere to the
+Great article why [[https://glyph.twistedmatrix.com/2015/11/editor-malware.html][Your editor is malware]]. The following basically sets up the configuration to adhere to the
 articles recommondations.
 
 #+BEGIN_SRC shell :exports none
@@ -49,7 +47,6 @@ python -m pip install --user certifi
   ;;                    (lambda (retrieved) t))))
 #+END_SRC
 
-
 * Locale
 
 #+BEGIN_SRC emacs-lisp
@@ -60,303 +57,26 @@ python -m pip install --user certifi
 (prefer-coding-system 'utf-8)
 #+END_SRC
 
-* Load Path
+* Evil
 
-Add the lib folder to the load path to enable the loading
-of local programs
-#+begin_src emacs-lisp
- (defvar private-dir "~/.emacs.d/lib/"
-   "Private elisp directory")
+Vim or Emacs? Why not Vim in Emacs!
 
-(if (file-exists-p private-dir)
-    (progn (add-to-list 'load-path private-dir)
-           (load (concat private-dir "init.el"))))
-
-#+end_src
-
-* Editing
-
-Lisp-friendly hippie expand
-#+begin_src emacs-lisp
-(setq hippie-expand-try-functions-list
-      '(try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill
-        try-complete-lisp-symbol-partially
-        try-complete-lisp-symbol))
-#+end_src
-
-#+begin_src emacs-lisp
-(show-paren-mode 1)
-(setq-default indent-tabs-mode nil)
-#+end_src
-
-When you visit a file, point goes to the last place where it
-was when you previously visited the same file.
-http://www.emacswiki.org/emacs/SavePlace
-
-#+begin_src emacs-lisp
-(require 'saveplace)
-(setq-default save-place t)
-;; keep track of saved places in ~/.emacs.d/places
-(setq save-place-file (concat user-emacs-directory "places"))
-#+end_src
-
-Emacs can automatically create backup files. This tells Emacs to
-put all backups in ~/.emacs.d/backups. More info:
-http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
-#+begin_src emacs-lisp
-(setq backup-directory-alist `(("." . ,(concat user-emacs-directory
-                                              "backups"))))
-(setq auto-save-default nil)
-#+end_src
-
-
-Comments
-#+begin_src emacs-lisp
-(defun toggle-comment-on-line ()
-  "comment or uncomment current line"
-  (interactive)
-  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
-(global-set-key (kbd "C-;") 'toggle-comment-on-line)
-#+end_src
-
-
-Use 2 spaces for tabs
-#+begin_src emacs-lisp
-(defun die-tabs ()
-  (interactive)
-  (set-variable 'tab-width 2)
-  (mark-whole-buffer)
-  (untabify (region-beginning) (region-end))
-  (keyboard-quit))
-#+end_src
-
-Fix weird os x kill error
-#+begin_src emacs-lisp
-(defun ns-get-pasteboard ()
-  "Returns the value of the pasteboard, or nil for unsupported formats."
-  (condition-case nil
-      (ns-get-selection-internal 'CLIPBOARD)
-    (quit nil)))
-#+end_src
-
-* Calendar
-
-Make monday the first day of the week.
-#+begin_src emacs-lisp
-(setq calendar-week-start-day 1)
-#+end_src
-
-Add week numbers
-#+begin_src emacs-lisp
-(copy-face font-lock-constant-face 'calendar-iso-week-face)
-(set-face-attribute 'calendar-iso-week-face nil :height 0.7)
-(setq calendar-intermonth-text
-      '(propertize
-        (format "%2d"
-                (car
-                 (calendar-iso-from-absolute
-                  (calendar-absolute-from-gregorian (list month day year)))))
-        'font-lock-face 'calendar-iso-week-face))
-#+end_src
-
-* Clojure
-** General
-
-This is useful for working with camel-case tokens, like names of
-Java classes (e.g. JavaClassName)
-#+begin_src emacs-lisp
-(add-hook 'clojure-mode-hook 'subword-mode)
-#+end_src
-
-Seems to be messing with swank and sbcl
-#+begin_src emacs-lisp
-(require 'clojure-mode-extra-font-locking)
-
-;; syntax hilighting for midje
-; (add-hook 'clojure-mode-hook
-;           (lambda ()
-;             (setq inferior-lisp-program "lein repl")
-;             (font-lock-add-keywords
-;              nil
-;              '(("(\\(facts?\\)"
-;                 (1 font-lock-keyword-face))
-;                ("(\\(background?\\)"
-;                 (1 font-lock-keyword-face))))
-;             (define-clojure-indent (fact 1))
-;             (define-clojure-indent (facts 1))))
-#+end_src
-** Cider
-
-Provides minibuffer documentation for the code you're typing into the repl
-#+begin_src emacs-lisp
-; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-#+end_src
-
-Go right to the REPL buffer when it's finished connecting
-#+begin_src emacs-lisp
-(setq cider-repl-pop-to-buffer-on-connect t)
-#+end_src
-
-When there's a cider error, show its buffer and switch to it
-#+begin_src emacs-lisp
-(setq cider-show-error-buffer t)
-;(setq cider-auto-select-error-buffer t)
-#+end_src
-
-Where to store the cider history.
-#+begin_src emacs-lisp
-(setq cider-repl-history-file "~/.emacs.d/cider-history")
-#+end_src
-
-Wrap when navigating history.
-#+begin_src emacs-lisp
-(setq cider-repl-wrap-history t)
-#+end_src
-
-Enable paredit in your REPL
-#+begin_src emacs-lisp
-(add-hook 'clojure-mode-hook 'enable-paredit-mode)
-#+end_src
-
-Use clojure mode for other extensions
-#+begin_src emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
-(add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
-;; (add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
-(add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
-#+end_src
-
-#+RESULTS:
-
-
-Key bindings
-#+begin_src emacs-lisp
-  (defun cider-start-http-server ()
-    (interactive)
-    (cider-load-current-buffer)
-    (let ((ns (cider-current-ns)))
-      (cider-repl-set-ns ns)
-      (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
-      (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
-
-
-  (defun cider-refresh ()
-    (interactive)
-    (cider-interactive-eval (format "(user/reset)")))
-
-  ;; (defun cider-eval-last-sexp-under-cursor (arg)
-  ;;   (interactive "p")
-  ;;   (forward-char)
-  ;;   (cider-eval-last-sexp)
-  ;;   (backward-char))
-
-  (defun cider-user-ns ()
-    (interactive)
-    (cider-repl-set-ns "user"))
-
-  (with-eval-after-load 'cider
-       (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
-       (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
-       (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
-       (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)
-       (define-key cider-mode-map (kbd "C-x C-e") 'cider-eval-last-sexp-under-cursor))
-#+end_src
-** Clojurescript
-
- Use Nodejs as the default clojurescript repl
-#+begin_src emacs-lisp
-  '(cider-cljs-lein-repl
-     "(do (require 'cljs.repl.node) (cemerick.piggieback/cljs-repl (cljs.repl.node/repl-env)))")
-#+end_src
-
-#+begin_src emacs-lisp
-(defun cider-figwheel-repl ()
-  (interactive)
-  (save-some-buffers)
-  (with-current-buffer (cider-current-repl-buffer)
-    (goto-char (point-max))
-    (insert "(require 'figwheel-sidecar.repl-api)
-             (figwheel-sidecar.repl-api/start-figwheel!) ; idempotent
-             (figwheel-sidecar.repl-api/cljs-repl)")
-    (cider-repl-return)))
-
-(global-set-key (kbd "C-c C-f") #'cider-figwheel-repl)
-#+end_src
-
-** Clj-refactor
-
-#+begin_src emacs-lisp
-(require 'clj-refactor)
-
-(defun my-clojure-mode-hook ()
-    (clj-refactor-mode 1)
-    (yas-minor-mode 1) ; for adding require/use/import statements
-    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-    (cljr-add-keybindings-with-prefix "C-c C-m"))
-
-(add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
-#+end_src
-
-Silence warnings
-#+begin_src emacs-lisp
-(setq cljr-warn-on-eval nil)
-#+end_src
-
-* ClojureScript
-
-#+begin_src emacs-lisp
-(setq cider-cljs-lein-repl
-      "(do (require 'figwheel-sidecar.repl-api)
-           (figwheel-sidecar.repl-api/start-figwheel!)
-           (figwheel-sidecar.repl-api/cljs-repl))")
-#+end_src
-
-* Dired
-
-#+begin_src emacs-lisp
-(setq dired-listing-switches "-alh")
-#+end_src
-* Elisp
-
-Automatically load paredit when editing a lisp file
-More at http://www.emacswiki.org/emacs/ParEdit
-
-#+begin_src emacs-lisp
-(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-#+end_src
-
-eldoc-mode shows documentation in the minibuffer when writing code
-http://www.emacswiki.org/emacs/ElDoc
-
-#+begin_src emacs-lisp
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-#+end_src
-
-* Evil-mode
-
-Fix to make tab expansion work in orgmode.
+Must be set to nil to allow for evil-collection to work properly.
 #+BEGIN_SRC emacs-lisp
-(setq evil-want-C-i-jump nil)
+  (setq evil-want-integration nil)
 #+END_SRC
 
+Load and use evil and friends
 #+BEGIN_SRC emacs-lisp
-(setq evil-want-integration nil)
+ (add-to-list 'load-path "~/.emacs.d/evil")
+ (require 'evil)
+ (evil-mode 1)
+ (global-evil-surround-mode 1)
+#+END_SRC
 
-(require 'evil)
-(evil-mode 1)
-
-;; (require 'evil-surround)
-  (global-evil-surround-mode 1)
+Init evil-collection
+#+BEGIN_SRC emacs-lisp
+  ;; (evil-collection-init)
 #+END_SRC
 
 Evil binds M-. to evil-repeat-pop-next. But I prefer ciders cider-find-var
@@ -367,167 +87,24 @@ so unbind M-. in the evil normal mode.
      (define-key evil-normal-state-map  "\M-." 'nil)))
 #+END_SRC
 
-#+RESULTS:
+* Editing
 
-#+BEGIN_SRC emacs-lisp
- (require 'evil-adjust)
-  (evil-adjust)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (evil-collection-init)
-#+END_SRC
-
-* Evil-lispy-mode
-
-Modes for reimagining paredit into a more vim like workflow.
-
-https://github.com/abo-abo/lispy
-https://github.com/sp3ctum/evil-lispy
-
+Emacs can automatically create backup files. This tells Emacs to
+put all backups in ~/.emacs.d/backups. More info:
+http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
 #+begin_src emacs-lisp
-;; (require 'evil-lispy)
-;; (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
-;; (add-hook 'clojure-mode-hook #'evil-lispy-mode)
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                              "backups"))))
+(setq auto-save-default nil)
 #+end_src
 
-* Editorconfig
-
-#+BEGIN_SRC emacs-lisp
-(require 'editorconfig)
-  (editorconfig-mode 1)
-#+END_SRC
-
-* Fira code
-
-
-Font with ligatures read more at https://github.com/tonsky/FiraCode
-
+Comments
 #+begin_src emacs-lisp
-;; ;; This works when using emacs --daemon + emacsclient
-;; (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
-;; ;; This works when using emacs without server/client
-;; (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
-;; ;; I haven't found one statement that makes both of the above situations work, so I use both for now
-
-;;(when (window-system)
-;;    (set-default-font "Fira Code"))
-;;  (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
-;;                 (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
-;;                 (36 . ".\\(?:>\\)")
-;;                 (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
-;;                 (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
-;;                 (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
-;;                 (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
-;;                 (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
-;;                 ;; commenting this out to avoid
-;;                 ;; error in process filter: Attempt to shape unibyte text
-;;                 ;; when running cider
-;;                 ;; (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
-;;                 (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
-;;                 (48 . ".\\(?:x[a-zA-Z]\\)")
-;;                 (58 . ".\\(?:::\\|[:=]\\)")
-;;                 (59 . ".\\(?:;;\\|;\\)")
-;;                 (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
-;;                 (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
-;;                 (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
-;;                 (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
-;;                 (91 . ".\\(?:]\\)")
-;;                 (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
-;;                 (94 . ".\\(?:=\\)")
-;;                 (119 . ".\\(?:ww\\)")
-;;                 (123 . ".\\(?:-\\)")
-;;                 (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
-;;                 (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)"))))
-;;(dolist (char-regexp alist)
-;;  (set-char-table-range composition-function-table (car char-regexp)
-;;                        `([,(cdr char-regexp) 0 font-shape-gstring]))))
-#+end_src
-
-* Flycheck
-
-Syntax checking
-
-#+begin_src emacs-lisp
-; (add-hook 'after-init-hook #'global-flycheck-mode)
-#+end_src
-
-* Org-mode
-  C-c C-e - export document
-
-#+begin_src emacs-lisp
-  (defun org-custom-keys ()
-    "Use n/p instead of arrow keys for moving items since they are unbinded."
-    (local-set-key (kbd "M-n") #'org-metadown)
-    (local-set-key (kbd "M-p") #'org-metaup))
-
-#+end_src
-
-- Makes bullets prettier.
-- Enables auto fill to make text fixed width
-- Runs custom keys
-
-#+begin_src emacs-lisp
- (add-hook 'org-mode-hook (lambda ()
-                             (org-bullets-mode 1)
-                             (auto-fill-mode 1)
-                             (setq org-src-fontify-natively t)
-                             (org-custom-keys)))
-
-#+end_src
-
-* Org-reveal
-
-#+begin_src emacs-lisp
-;; (require 'ox-reveal)
-#+end_src
-
-* Javascript
-
-
-#+begin_src emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.js$" . js-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx$" . js2-jsx-mode))
-(add-hook 'js-mode-hook 'subword-mode)
-(add-hook 'html-mode-hook 'subword-mode)
-(setq js-indent-level 2)
-(eval-after-load "sgml-mode"
-  '(progn
-     (require 'tagedit)
-     (tagedit-add-paredit-like-keybindings)
-     (add-hook 'html-mode-hook (lambda () (tagedit-mode 1)))))
-#+end_src
-
-* Markdown
-
-#+begin_src emacs-lisp
-(autoload 'markdown-mode "markdown-mode"
-          "Major mode for editing Markdown files" t)
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-
-(autoload 'gfm-mode "gfm-mode"
-          "Major mode for editing GitHub Flavored Markdown files" t)
-(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
-#+end_src
-
-* Magit
-
-#+begin_src emacs-lisp
-(require 'evil-magit)
-#+end_src
-
-* Misc
-
-Changes all yes/no questions to y/n type
-#+begin_src emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
-#+end_src
-
-Shell scripts
-#+begin_src emacs-lisp
-(setq-default sh-basic-offset 2)
-(setq-default sh-indentation 2)
+(defun toggle-comment-on-line ()
+  "comment or uncomment current line"
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+(global-set-key (kbd "C-;") 'toggle-comment-on-line)
 #+end_src
 
 No need for ~ files when editing
@@ -550,21 +127,224 @@ Delete trailing whitespace on save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 #+end_src
 
+* Calendar
+
+Make monday the first day of the week.
 #+begin_src emacs-lisp
-(require 'powerline)
-(powerline-center-evil-theme)
+(setq calendar-week-start-day 1)
 #+end_src
 
+
+Add week numbers
 #+begin_src emacs-lisp
-(defun loader.org ()
-  (interactive)
-  (find-file "~/dotfiles-local/emacs.d/loader.org"))
+(copy-face font-lock-constant-face 'calendar-iso-week-face)
+(set-face-attribute 'calendar-iso-week-face nil :height 0.7)
+(setq calendar-intermonth-text
+      '(propertize
+        (format "%2d"
+                (car
+                 (calendar-iso-from-absolute
+                  (calendar-absolute-from-gregorian (list month day year)))))
+        'font-lock-face 'calendar-iso-week-face))
 #+end_src
 
-* Navigation
+* Languages
+** Clojure
+
+#+BEGIN_SRC emacs_lisp
+(add-hook 'cider-mode-hook 'eldoc-mode)
+#+END_SRC
+
+Enable paredit in your REPL
+#+begin_src emacs-lisp
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+#+end_src
+
+#+BEGIN_SRC emacs-lisp
+(require 'clj-refactor)
+
+(defun my-clojure-mode-hook ()
+ (clj-refactor-mode 1)
+ (yas-minor-mode 1)        ; for adding require/use/import statements
+ ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+ (cljr-add-keybindings-with-prefix "C-c C-<m>"))
+
+(add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
+#+END_SRC
+
+** Elisp
+
+  Automatically load paredit when editing a lisp file
+  More at http://www.emacswiki.org/emacs/ParEdit
+
+  #+begin_src emacs-lisp
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+  #+end_src
+
+  eldoc-mode shows documentation in the minibuffer when writing code
+  http://www.emacswiki.org/emacs/ElDoc
+
+  #+begin_src emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+  (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+  (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+  #+end_src
+
+ Lisp-friendly hippie expand
+ #+begin_src emacs-lisp
+ (setq hippie-expand-try-functions-list
+       '(try-expand-dabbrev
+         try-expand-dabbrev-all-buffers
+         try-expand-dabbrev-from-kill
+         try-complete-lisp-symbol-partially
+         try-complete-lisp-symbol))
+ #+end_src
+
+ #+begin_src emacs-lisp
+ (show-paren-mode 1)
+ (setq-default indent-tabs-mode nil)
+ #+end_src
+* Magit
+
+#+begin_src emacs-lisp
+(require 'evil-magit)
+#+end_src
+* UI
+** Buffer control
+
+ Make buffer resizing alot more convinient
+
+ #+begin_src emacs-lisp
+ (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+ (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+ (global-set-key (kbd "S-C-<down>") 'shrink-window)
+ (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+ #+end_src
+
+** Editorconfig
+
+#+BEGIN_SRC emacs-lisp
+(require 'editorconfig)
+  (editorconfig-mode 1)
+#+END_SRC
+
+** Keys
+ Key binding to use "hippie expand" for text autocompletion
+ http://www.emacswiki.org/emacs/HippieExpand
+ #+BEGIN_SRC emacs-lisp
+ (global-set-key (kbd "M-/") 'hippie-expand)
+ #+END_SRC
+** Misc
+ Changes all yes/no questions to y/n type
+ #+begin_src emacs-lisp
+ (fset 'yes-or-no-p 'y-or-n-p)
+ #+end_src
+
+ Use 2 spaces for tabs
+ #+begin_src emacs-lisp
+ (defun die-tabs ()
+   (interactive)
+   (set-variable 'tab-width 2)
+   (mark-whole-buffer)
+   (untabify (region-beginning) (region-end))
+   (keyboard-quit))
+ #+end_src
 
 
-When several buffers visit identically-named files,
+No cursor blinking, it's distracting
+#+begin_src emacs-lisp
+(blink-cursor-mode 0)
+#+end_src
+
+Full path in title bar
+#+begin_src emacs-lisp
+(setq-default frame-title-format "%b (%f)")
+#+end_src
+
+Don't pop up font menu
+#+begin_src emacs-lisp
+(global-set-key (kbd "s-t") '(lambda () (interactive)))
+#+end_src
+
+No bell
+#+begin_src emacs-lisp
+(setq ring-bell-function 'ignore)
+#+end_src
+
+#+end_src
+
+Prettier lambda's and fn's
+#+begin_src emacs-lisp
+(push '(" fn ") prettify-symbols-alist)
+(global-prettify-symbols-mode +1)
+#+end_src
+
+These customizations change the way emacs looks and disable/enable
+some user interface elements. Some useful customizations are
+commented out, and begin with the line "CUSTOMIZE". These are more
+a matter of preference and may require some fiddling to match your
+preferences
+
+Turn off the menu bar at the top of each frame because it's distracting
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+#+end_src
+
+You can uncomment this to remove the graphical toolbar at the top. After
+awhile, you won't need the toolbar.
+#+begin_src emacs-lisp
+;;(when (fboundp 'tool-bar-mode)
+;; (tool-bar-mode -1))
+#+end_src
+
+Don't show native OS scroll bars for buffers because they're redundant
+#+begin_src emacs-lisp
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+#+end_src
+
+Color Themes
+Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
+for a great explanation of emacs color themes.
+https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
+for a more technical explanation.
+
+#+begin_src emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'load-path "~/.emacs.d/themes")
+#+end_src
+
+Increase font size for better readability
+
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil :height 130)
+#+end_src
+
+Make killing/yanking interact with the clipboard
+#+begin_src emacs-lisp
+(setq x-select-enable-clipboard t)
+#+end_src
+
+Shows all options when running apropos. For more info,
+https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html
+#+begin_src emacs-lisp
+(setq apropos-do-all t)
+#+end_src
+
+Mouse yank commands yank at point instead of at click.
+#+begin_src emacs-lisp
+(setq mouse-yank-at-point t)
+#+end_src
+
+** Navigation
+   When several buffers visit identically-named files,
 Emacs must give the buffers distinct names. The usual method
 for making buffer names unique adds ‘<2>’, ‘<3>’, etc. to the end
 of the buffer names (all but one of them).
@@ -635,12 +415,6 @@ Display IDO vertically for easier reading
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 #+end_src
 
-Shows a list of buffers and make it use evil
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(setq evil-emacs-state-modes (delq 'ibuffer-mode evil-emacs-state-modes))
-#+end_src
-
 Enhances M-x to allow easier execution of commands. Provides
 a filterable list of possible commands in the minibuffer
 http://www.emacswiki.org/emacs/Smex
@@ -650,6 +424,17 @@ http://www.emacswiki.org/emacs/Smex
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
 #+end_src
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x o") 'ace-window)
+#+END_SRC
+
+Change <return> to open thing at point in current dired buffer instead of opening a new one.
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'evil-maps
+    (define-key dired-mode-map (kbd "<return>") #'dired-find-alternate-file))
+#+END_SRC
 
 * Projectile
 
@@ -663,28 +448,6 @@ Projectile everywhere!
 #+begin_src emacs-lisp
 (projectile-global-mode)
 #+end_src
-
-* Keys
-
-Interactive search key bindings. By default, C-s runs
-isearch-forward, so this swaps the bindings.
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-backward)
-#+END_SRC
-
-Key binding to use "hippie expand" for text autocompletion
-http://www.emacswiki.org/emacs/HippieExpand
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "M-/") 'hippie-expand)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-x o") 'ace-window)
-#+END_SRC
 
 * Shell integration
 
@@ -735,181 +498,11 @@ Sets the slime compiler to use Steelbank common lisp
 
 (require 'slime)
 #+END_SRC
+* Shortcuts
 
-* UI
-
-Prettier lambda's and fn's
-#+begin_src emacs-lisp
-(push '(" fn ") prettify-symbols-alist)
-(global-prettify-symbols-mode +1)
-#+end_src
-
-#+begin_src emacs-lisp
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-#+end_src
-
-#+begin_src emacs-lisp
-(when (display-graphic-p)
-  (load-theme 'arjen-grey t))
-
-  ;; (if (display-graphic-p)
-  ;;   (load-theme 'arjen-grey t)
-  ;;   (load-theme 'spacemacs-light t))
-#+end_src
-
-These customizations change the way emacs looks and disable/enable
-some user interface elements. Some useful customizations are
-commented out, and begin with the line "CUSTOMIZE". These are more
-a matter of preference and may require some fiddling to match your
-preferences
-
-Turn off the menu bar at the top of each frame because it's distracting
-#+begin_src emacs-lisp
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-#+end_src
-
-You can uncomment this to remove the graphical toolbar at the top. After
-awhile, you won't need the toolbar.
-#+begin_src emacs-lisp
-;;(when (fboundp 'tool-bar-mode)
-;; (tool-bar-mode -1))
-#+end_src
-
-Don't show native OS scroll bars for buffers because they're redundant
-#+begin_src emacs-lisp
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-#+end_src
-
-Color Themes
-Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
-for a great explanation of emacs color themes.
-https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
-for a more technical explanation.
-
-#+begin_src emacs-lisp
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(add-to-list 'load-path "~/.emacs.d/themes")
-#+end_src
-
-Increase font size for better readability
-
-#+begin_src emacs-lisp
-;;(set-face-attribute 'default nil :height 140)
-#+end_src
-
-Uncomment the lines below by removing semicolons and play with the
-values in order to set the width (in characters wide) and height
-
-#+begin_src emacs-lisp
-;; (in lines high) Emacs will have whenever you start it
-;; (setq initial-frame-alist '((top . 0) (left . 0) (width . 177) (height . 53)))
-#+end_src
-
-Make killing/yanking interact with the clipboard
-#+begin_src emacs-lisp
-(setq x-select-enable-clipboard t)
-#+end_src
-
-I'm actually not sure what this does but it's recommended?
-#+begin_src emacs-lisp
-(setq x-select-enable-primary t)
-#+end_src
-
-Save clipboard strings into kill ring before replacing them.
-When one selects something in another program to paste it into Emacs,
-but kills something in Emacs before actually pasting it,
-this selection is gone unless this variable is non-nil
-#+begin_src emacs-lisp
-(setq save-interprogram-paste-before-kill t)
-#+end_src
-
-Shows all options when running apropos. For more info,
-https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html
-#+begin_src emacs-lisp
-(setq apropos-do-all t)
-#+end_src
-
-Mouse yank commands yank at point instead of at click.
-#+begin_src emacs-lisp
-(setq mouse-yank-at-point t)
-#+end_src
-
-No cursor blinking, it's distracting
-#+begin_src emacs-lisp
-(blink-cursor-mode 0)
-#+end_src
-
-Full path in title bar
-#+begin_src emacs-lisp
-(setq-default frame-title-format "%b (%f)")
-#+end_src
-
-Don't pop up font menu
-#+begin_src emacs-lisp
-(global-set-key (kbd "s-t") '(lambda () (interactive)))
-#+end_src
-
-No bell
-#+begin_src emacs-lisp
-(setq ring-bell-function 'ignore)
-#+end_src
-
-#+end_src
-
-* Window control
-
-Make window resizing alot more convinient
-
-#+begin_src emacs-lisp
-(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
-(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "S-C-<down>") 'shrink-window)
-(global-set-key (kbd "S-C-<up>") 'enlarge-window)
-#+end_src
-
-* Executable buffers
-
-Make buffers with a shebang executable
-#+begin_src emacs-lisp
-(add-hook 'after-save-hook
-            'executable-make-buffer-file-executable-if-script-p)
-#+end_src
-* Logbook
-
-Adds functions to open todays/yestedays log entries
-
-#+begin_src emacs-lisp
-(defvar logbook/path "~/Dropbox/Org/")
-(defvar logbook/postfix ".org")
-
-(defun logbook/open-day (offset)
-  (interactive)
-  (let ((f (lambda (n)
-                  (let ((str (number-to-string n)))
-                    (if (< n 10)
-                        (concat "0" str)
-                        str)))))
-    (destructuring-bind (month day year) (calendar-current-date offset)
-       (find-file
-        (concat logbook/path
-                (format "%s-%s-%s" year (funcall f month) (funcall f day))
-                logbook/postfix)))))
-
-
-(defun logbook/today ()
-  "Creates a new log entry in the specified path using todays date"
-  (interactive)
-  (logbook/open-day 0)
-  (if (= 0 (buffer-size))
-      (insert (format-time-string "*<%Y-%m-%d>"))))
-
-
-(defun logbook/yesterday () (interactive) (logbook/open-day -1))
-
-#+end_src
-
-
-#+begin_src emacs-lisp
-#+end_src
+Open loader.org for easy editing of the config.
+#+BEGIN_SRC emacs-lisp
+(defun rk-loader ()
+ (interactive)
+ (find-file "~/.emacs.d/loader.org"))
+#+END_SRC
