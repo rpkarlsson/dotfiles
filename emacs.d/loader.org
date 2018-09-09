@@ -236,6 +236,13 @@ Use hjkl instead of arrows for moving items
   (define-key org-mode-map "\M-l" #'org-metaright))
 #+END_SRC
 
+#+begin_src emacs-lisp
+ (add-hook 'org-mode-hook (lambda ()
+                             (auto-fill-mode 1)
+                             (setq org-src-fontify-natively t)))
+
+#+end_src
+
 * Projectile
 
 #+BEGIN_SRC emacs-lisp
@@ -306,6 +313,7 @@ Open loader.org for easy editing of the config.
  (interactive)
  (find-file "~/.emacs.d/loader.org"))
 #+END_SRC
+
 * UI
 ** Buffer control
 
