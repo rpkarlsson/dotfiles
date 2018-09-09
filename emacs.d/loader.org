@@ -76,7 +76,7 @@ Load and use evil and friends
 
 Init evil-collection
 #+BEGIN_SRC emacs-lisp
-  ;; (evil-collection-init)
+  (evil-collection-init)
 #+END_SRC
 
 Evil binds M-. to evil-repeat-pop-next. But I prefer ciders cider-find-var
@@ -215,6 +215,87 @@ Enable paredit in your REPL
 #+begin_src emacs-lisp
 (require 'evil-magit)
 #+end_src
+* Org
+
+Use hjkl instead of arrows for moving items
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'evil-maps
+  (define-key org-mode-map "\M-j" #'org-metadown)
+  (define-key org-mode-map "\M-k" #'org-metaup)
+  (define-key org-mode-map "\M-h" #'org-metaleft)
+  (define-key org-mode-map "\M-l" #'org-metaright))
+#+END_SRC
+
+* Projectile
+
+#+BEGIN_SRC emacs-lisp
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+END_SRC
+
+Projectile everywhere!
+#+begin_src emacs-lisp
+(projectile-global-mode)
+#+end_src
+
+* Shell integration
+
+Ever find that a command works in your shell, but not in Emacs?
+This happens a lot on OS X, where an Emacs instance started from the GUI inherits a default set of environment variables.
+This library solves this problem by copying important environment variables from the user's shell: it works by asking your shell to print out the variables of interest, then copying them into the Emacs environment.
+
+For more info see:
+https://github.com/purcell/exec-path-from-shell
+
+#+BEGIN_SRC emacs-lisp
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs
+   '("PATH")))
+#+END_SRC
+
+* Slime
+
+Sets the slime compiler to use Steelbank common lisp
+#+BEGIN_SRC emacs-lisp
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(eval-after-load "slime"
+  '(progn
+     (slime-setup '(
+                    slime-asdf
+                    slime-autodoc
+                    slime-editing-commands
+                    slime-fancy-inspector
+                    slime-fontifying-fu
+                    slime-fuzzy
+                    slime-indentation
+                    slime-mdot-fu
+                    slime-package-fu
+                    slime-references
+                    slime-repl
+                    slime-sbcl-exts
+                    slime-scratch
+                    slime-xref-browser
+                    ))
+     (slime-autodoc-mode)
+     (setq slime-complete-symbol*-fancy t)
+     (setq slime-complete-symbol-function
+  'slime-fuzzy-complete-symbol)))
+
+(require 'slime)
+#+END_SRC
+* Shortcuts
+
+Open loader.org for easy editing of the config.
+#+BEGIN_SRC emacs-lisp
+(defun rk-loader ()
+ (interactive)
+ (find-file "~/.emacs.d/loader.org"))
+#+END_SRC
 * UI
 ** Buffer control
 
@@ -434,75 +515,4 @@ Change <return> to open thing at point in current dired buffer instead of openin
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'evil-maps
     (define-key dired-mode-map (kbd "<return>") #'dired-find-alternate-file))
-#+END_SRC
-
-* Projectile
-
-#+BEGIN_SRC emacs-lisp
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-#+END_SRC
-
-Projectile everywhere!
-#+begin_src emacs-lisp
-(projectile-global-mode)
-#+end_src
-
-* Shell integration
-
-Ever find that a command works in your shell, but not in Emacs?
-This happens a lot on OS X, where an Emacs instance started from the GUI inherits a default set of environment variables.
-This library solves this problem by copying important environment variables from the user's shell: it works by asking your shell to print out the variables of interest, then copying them into the Emacs environment.
-
-For more info see:
-https://github.com/purcell/exec-path-from-shell
-
-#+BEGIN_SRC emacs-lisp
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-envs
-   '("PATH")))
-#+END_SRC
-
-* Slime
-
-Sets the slime compiler to use Steelbank common lisp
-#+BEGIN_SRC emacs-lisp
-(setq inferior-lisp-program "/usr/local/bin/sbcl")
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(eval-after-load "slime"
-  '(progn
-     (slime-setup '(
-                    slime-asdf
-                    slime-autodoc
-                    slime-editing-commands
-                    slime-fancy-inspector
-                    slime-fontifying-fu
-                    slime-fuzzy
-                    slime-indentation
-                    slime-mdot-fu
-                    slime-package-fu
-                    slime-references
-                    slime-repl
-                    slime-sbcl-exts
-                    slime-scratch
-                    slime-xref-browser
-                    ))
-     (slime-autodoc-mode)
-     (setq slime-complete-symbol*-fancy t)
-     (setq slime-complete-symbol-function
-  'slime-fuzzy-complete-symbol)))
-
-(require 'slime)
-#+END_SRC
-* Shortcuts
-
-Open loader.org for easy editing of the config.
-#+BEGIN_SRC emacs-lisp
-(defun rk-loader ()
- (interactive)
- (find-file "~/.emacs.d/loader.org"))
 #+END_SRC
