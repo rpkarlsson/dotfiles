@@ -210,6 +210,16 @@ Enable paredit in your REPL
  (show-paren-mode 1)
  (setq-default indent-tabs-mode nil)
  #+end_src
+* Lib
+
+#+BEGIN_SRC emacs-lisp
+  (defun load-directory (dir)
+        (let ((load-it (lambda (f)
+   (load-file (concat (file-name-as-directory dir) f)))))
+          (mapc load-it (directory-files dir nil "\\.el$"))))
+      (load-directory "~/.emacs.d/lib/")
+#+END_SRC
+
 * Magit
 
 #+begin_src emacs-lisp
