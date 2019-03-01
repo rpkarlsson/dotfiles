@@ -1,6 +1,5 @@
 alias dnf="sudo dnf"
 alias e="efn"
-alias e="emacsclient"
 alias hidden="ls -d .??*"
 alias l="ls -lh"
 alias ll="ls -alh"
@@ -8,5 +7,9 @@ alias ln="ln -v"
 alias mkdir="mkdir -p"
 alias reboot="sudo reboot"
 alias shutdow="sudo shutdown -h now"
+alias start-mongo="sudo systemctl start mongod"
 alias v="$VISUAL"
 alias wttr="curl wttr.in/vaxjo"
+
+e() { $EDITOR "${1:-.}"; }
+g() { git "${1:-status}"; }
