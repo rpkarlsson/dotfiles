@@ -1,0 +1,14 @@
+Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
+        , borderColor = "black"
+        , border = TopB
+        , bgColor = "black"
+        , fgColor = "grey"
+        , position = TopW L 100
+        , commands = [ Run Com "uname" ["-s","-r"] "" 36000
+                       , Run Date "%a %b %_d %Y %H:%M" "date" 10
+		       , Run Battery ["BAT0"] 600
+                        ]
+        , sepChar = "%"
+        , alignSep = "}{"
+        , template = "}{ %battery% | <fc=#ee9a00>%date%</fc> "
+        }

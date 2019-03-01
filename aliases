@@ -1,0 +1,2 @@
+alias dnf="sudo dnf"
+alias e="emacsclient"

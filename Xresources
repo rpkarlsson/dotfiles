@@ -1,0 +1,4 @@
+xterm*font:     *-fixed-*-*-*-20-*
+
+URxvt.cursorBlink: false
+URxvt.font: xft:consolas:size=10
