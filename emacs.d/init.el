@@ -11,6 +11,7 @@ There are two things you can do about this warning:
 2. Remove this warning from your init file so you won't see it again."))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
   ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
   )
 
@@ -56,6 +57,14 @@ There are two things you can do about this warning:
 
 (use-package magit
   :ensure t)
+
+(use-package ob-shell
+  :after evil)
+
+(use-package org
+  :ensure org-plus-contrib
+  :config)
+
 
 (use-package paredit
   :ensure t)
@@ -141,7 +150,7 @@ There are two things you can do about this warning:
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))))
+    (org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
