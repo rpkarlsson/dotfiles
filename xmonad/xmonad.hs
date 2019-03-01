@@ -15,7 +15,8 @@ main = do
      session <- getEnv "DESKTOP_SESSION"
      xmproc <- spawnPipe "/usr/bin/xmobar"
      xmonad $ desktopConfig
-       { terminal = myTerminal }
+       { terminal = myTerminal
+         , focusFollowsMouse  = myFocusFollowsMouse }
        `additionalKeysP` myKeys
 
 desktop "gnome" = gnomeConfig
@@ -38,8 +39,7 @@ myKeys = [ ("<XF86AudioRaiseVolume>", spawn "amixer -q set Master 5%+")
         ]
 
 myTerminal = "urxvt"
-
-
+myFocusFollowsMouse = False
 
 -- cfg = desktopConfig { terminal = "urxvt" }
 
