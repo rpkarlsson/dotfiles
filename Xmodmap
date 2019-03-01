@@ -11,6 +11,4 @@ keycode 133 = Alt_L
 add mod1 = Alt_L
 add mod4 = Super_L
 
-!pointer = 1 2 3 5 4
-
 
