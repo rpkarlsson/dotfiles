@@ -40,6 +40,10 @@ There are two things you can do about this warning:
   :config
   (evil-collection-init))
 
+(use-package evil-magit
+  :ensure t
+  :after (magit evil))
+
 (use-package evil-surround
   :ensure t
   :config
@@ -52,6 +56,7 @@ There are two things you can do about this warning:
 
 (use-package magit
   :ensure t)
+
 (use-package paredit
   :ensure t)
 
@@ -136,7 +141,7 @@ There are two things you can do about this warning:
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))))
+    (evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
