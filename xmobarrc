@@ -5,10 +5,11 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
         , fgColor = "grey"
         , position = TopW L 100
         , commands = [ Run Com "uname" ["-s","-r"] "" 36000
-                       , Run Date "%a %b %_d %Y %H:%M" "date" 10
+                       , Run Date "%a %b %d %Y %H:%M" "date" 10
 		       , Run Battery ["BAT0"] 600
+                       , Run Com "sound-status" [] "sound" 1000
                         ]
         , sepChar = "%"
         , alignSep = "}{"
-        , template = "}{ %battery% | <fc=#ee9a00>%date%</fc> "
+        , template = "}{snd: %sound% | %battery% | %date% "
         }
