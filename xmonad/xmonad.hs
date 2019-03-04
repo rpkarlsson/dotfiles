@@ -40,6 +40,8 @@ myKeys = [ ("<XF86AudioRaiseVolume>", spawn "amixer -q set Master 5%+")
 
 myTerminal = "urxvt"
 myFocusFollowsMouse = False
+-- myStartupHook = do
+--   setWMName "LG3D"
 
 -- cfg = desktopConfig { terminal = "urxvt" }
 

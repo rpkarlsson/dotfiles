@@ -1,3 +1,4 @@
+! [key] [shift+key] [mode_switch+key] [mode_switch+shift+key] [alt-graph_key] [alt-graph+shift+key]
 clear lock
 clear control
 keycode 66 = Control_L
