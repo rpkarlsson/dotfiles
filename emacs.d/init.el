@@ -37,17 +37,23 @@ There are two things you can do about this warning:
 (use-package better-defaults
   :ensure t)
 
+(use-package clojure-mode
+  :ensure t
+  :pin melpa
+  :config
+  (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
+  (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
+  (add-hook 'clojure-mode-hook 'enable-paredit-mode))
+
 (use-package cider
   :ensure t
   :config
   (setq cider-repl-pop-to-buffer-on-connect t)
-  (setq cider-repl-pop-to-buffer-on-connect t)
-  (setq cider-repl-pop-to-buffer-on-connect t)
-  (setq cider-repl-pop-to-buffer-on-connect t)
-  (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
-  (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
   ;; (add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
-  (add-hook 'clojure-mode-hook 'enable-paredit-mode))
+  ;; (add-hook 'clojure-mode-hook 'enable-paredit-mode)
+  )
 
 (use-package clojure-mode-extra-font-locking
   :ensure t)
@@ -57,11 +63,19 @@ There are two things you can do about this warning:
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
-  :config (evil-mode 1))
+  :config
+  (evil-mode 1)
+  (define-key evil-normal-state-map  "\M-." 'nil)
+  ;; (eval-after-load "evil-maps"
+  ;; '(progn
+  ;;    ))
+  )
 
 (use-package evil-collection
   :ensure t
   :after evil
+  :custom
+  (evil-collection-outline-bind-tab-p nil)
   :config
   (evil-collection-init))
 
@@ -80,6 +94,7 @@ There are two things you can do about this warning:
   (ido-ubiquitous-mode 1))
 
 (use-package ido-vertical-mode
+  :ensure t
   :config
   (ido-vertical-mode 1)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
@@ -98,8 +113,14 @@ There are two things you can do about this warning:
 (use-package org
   :ensure org-plus-contrib
   :config
+  (setq org-duration-format (quote h:mm))
+  (with-eval-after-load 'evil-maps
+    (define-key org-mode-map "\M-j" #'org-metadown)
+    (define-key org-mode-map "\M-k" #'org-metaup)
+    (define-key org-mode-map "\M-h" #'org-metaleft)
+    (define-key org-mode-map "\M-l" #'org-metaright))
   (add-hook 'org-mode-hook (lambda ()
-                             ;(org-bullets-mode 1)
+                                        ;(org-bullets-mode 1)
                              (auto-fill-mode 1)
                              (setq org-src-fontify-natively t)
                              (org-custom-keys))))
@@ -113,6 +134,7 @@ There are two things you can do about this warning:
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (setq projectile-indexing-method 'hybrid) ;; Use .projectile files
   ;(projectile-global-mode)
   )
 
@@ -121,7 +143,11 @@ There are two things you can do about this warning:
   (setq uniquify-buffer-name-style 'forward))
 
 (use-package smex
-  :ensure t)
+  :ensure t
+  :config
+  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex))
 
 (use-package slime
   :ensure t
@@ -145,6 +171,15 @@ There are two things you can do about this warning:
   (setq slime-complete-symbol*-fancy t)
   (setq slime-complete-symbol-function
         'slime-fuzzy-complete-symbol))
+
+;;
+;; Lib
+;;
+(defun load-directory (dir)
+  (let ((load-it (lambda (f)
+                   (load-file (concat (file-name-as-directory dir) f)))))
+    (mapc load-it (directory-files dir nil "\\.el$"))))
+(load-directory "~/.emacs.d/lib/")
 
 ;;
 ;; Backups
@@ -200,7 +235,7 @@ There are two things you can do about this warning:
 (blink-cursor-mode 0)
 (setq ring-bell-function 'ignore)
 (setq inhibit-splash-screen t)
-(set-face-attribute 'default nil :height 110)
+;(set-face-attribute 'default nil :height 110)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq vc-follow-symlinks t)
@@ -213,6 +248,26 @@ There are two things you can do about this warning:
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+
+
+(push '(" fn ") prettify-symbols-alist)
+(global-prettify-symbols-mode +1)
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; Focus buffer
+(defvar window-split-saved-config nil)
+(defun window-split-toggle-one-window ()
+  "Make the current window fill the frame.
+  If there is only one window try reverting to the most recently saved
+  window configuration."
+  (interactive)
+  (if (and window-split-saved-config (not (window-parent)))
+      (set-window-configuration window-split-saved-config)
+    (setq window-split-saved-config (current-window-configuration))
+    (delete-other-windows)))
+
+ (global-set-key (kbd "C-x 1") 'window-split-toggle-one-window)
 
 ;Nov.el
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
@@ -244,9 +299,10 @@ There are two things you can do about this warning:
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(elfeed-feeds (quote ("http://insideclojure.org/feed.xml")))
  '(package-selected-packages
    (quote
-    (pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))))
+    (elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

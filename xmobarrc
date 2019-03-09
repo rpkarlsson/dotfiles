@@ -8,8 +8,9 @@ Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
                        , Run Date "%a %b %d %Y %H:%M" "date" 10
 		       , Run Battery ["BAT0"] 600
                        , Run Com "sound-status" [] "sound" 10
+                       , Run Kbd [ ("us" , "US")]
                         ]
         , sepChar = "%"
         , alignSep = "}{"
-        , template = "}{snd: %sound% | %battery% | %date% "
+        , template = "}{ %kbd% | snd: %sound% | %battery% | %date% "
         }

@@ -8,6 +8,7 @@ import XMonad.Config.Desktop
 import XMonad.Config.Gnome
 import XMonad.Config.Kde
 import XMonad.Config.Xfce
+import XMonad.Hooks.SetWMName
 import XMonad.Util.EZConfig(additionalKeys, additionalKeysP)
 import XMonad.Util.Run
 
@@ -16,32 +17,43 @@ main = do
      xmproc <- spawnPipe "/usr/bin/xmobar"
      xmonad $ desktopConfig
        { terminal = myTerminal
-         , focusFollowsMouse  = myFocusFollowsMouse }
+         , modMask = myModMask
+         , focusFollowsMouse  = myFocusFollowsMouse
+         , startupHook = myStartupHook
+         , borderWidth = myBorderWidth
+         , focusedBorderColor = myFocusedBorderColor
+         , normalBorderColor = myNormalBorderColor
+         }
        `additionalKeysP` myKeys
 
-desktop "gnome" = gnomeConfig
-desktop "kde" = kde4Config
-desktop "xfce" = xfceConfig
-desktop "xmonad-mate" = gnomeConfig
+-- desktop "gnome" = gnomeConfig
+-- desktop "kde" = kde4Config
+-- desktop "xfce" = xfceConfig
+-- desktop "xmonad-mate" = gnomeConfig
 desktop _ = desktopConfig
 
+myFocusedBorderColor = "#ff0000"      -- color of focused border
+myNormalBorderColor  = "#cccccc"      -- color of inactive border
+myBorderWidth = 1 -- width of border around windows
+
+myFocusFollowsMouse = True
+myModMask = mod3Mask
+myTerminal = "urxvt"
+myStartupHook = do
+  setWMName "LG3D"
+  spawn "~/.xmonad/on-start-hook"
 
 myKeys = [ ("<XF86AudioRaiseVolume>", spawn "amixer -q set Master 5%+")
         , ("<XF86AudioLowerVolume>", spawn "amixer -q set Master 5%-")
-        , ("<XF86AudioMute>", spawn "amixer -q set Master toggle")    
+        , ("<XF86AudioMute>", spawn "amixer -q set Master toggle")
 
-        -- , ("<XF86AudioPlay>", spawn "playerctl play-pause")    
-        -- , ("<XF86AudioPrev>", spawn "playerctl previous")    
-        -- , ("<XF86AudioNext>", spawn "playerctl next")    
+        -- , ("<XF86AudioPlay>", spawn "playerctl play-pause")
+        -- , ("<XF86AudioPrev>", spawn "playerctl previous")
+        -- , ("<XF86AudioNext>", spawn "playerctl next")
 
-        , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 1")    
-        , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 1")    
+        , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 1")
+        , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 1")
         ]
-
-myTerminal = "urxvt"
-myFocusFollowsMouse = False
--- myStartupHook = do
---   setWMName "LG3D"
 
 -- cfg = desktopConfig { terminal = "urxvt" }
 
@@ -55,7 +67,7 @@ myFocusFollowsMouse = False
 -- import System.Posix.Env (getEnv)
 -- import Data.Maybe (maybe)
 
-  
+
 -- import XMonad
 -- import XMonad.Config.Desktop
 -- import XMonad.Config.Gnome
@@ -416,7 +428,7 @@ myFocusFollowsMouse = False
 --   --     -- startupHook = setWMName "LG3D"
 --   --     handleEventHook = docksEventHook
 
---   -- } 
+--   -- }
 --   -- $ maybe desktopConfig desktop session
 
 -- ------------------------------------------------------------------------
@@ -446,4 +458,3 @@ myFocusFollowsMouse = False
 --     -- manageHook         = myManageHook,
 --     -- startupHook        = myStartupHook
 -- }
-

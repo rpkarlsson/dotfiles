@@ -1,5 +1,5 @@
-xterm*font:     *-fixed-*-*-*-20-*
+Emacs.default.attributeHeight: 94
 
 URxvt.cursorBlink: false
-URxvt.font: xft:consolas:size=10
-URxvt.scrollBar: false]
+URxvt.font: xft:consolas:size=9
+URxvt.scrollBar: false

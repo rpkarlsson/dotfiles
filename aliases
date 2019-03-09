@@ -9,8 +9,10 @@ alias mkdir="mkdir -p"
 alias reboot="sudo reboot"
 alias shutdown="sudo shutdown -h now"
 alias start-mongo="sudo systemctl start mongod"
+alias start-mongo="sudo systemctl start mongod"
 alias v="$VISUAL"
 alias wttr="curl wttr.in/vaxjo"
+alias open="xdg-open"
 
 e() { $EDITOR "${1:-.}"; }
 g() { git "${1:-status}"; }
