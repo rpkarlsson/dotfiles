@@ -13,6 +13,7 @@ alias start-mongo="sudo systemctl start mongod"
 alias v="$VISUAL"
 alias wttr="curl wttr.in/vaxjo"
 alias open="xdg-open"
+alias password="openssl rand -base64 32"
 
 e() { $EDITOR "${1:-.}"; }
 g() { git "${1:-status}"; }

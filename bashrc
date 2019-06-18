@@ -20,10 +20,10 @@ if [ -f ~/.aliases ]; then
 	. ~/.aliases
 fi
 
-set -o vi
+# set -o vi
 
 # Natural scrolling
-xinput set-prop 11 295 1
+#xinput set-prop 11 295 1
 
 # Prompt
 function gfn() {
@@ -99,3 +99,8 @@ bind "set show-all-if-ambiguous on"
 # Perform partial completion on the first Tab press,
 # only start cycling full results on the second Tab press
 bind "set menu-complete-display-prefix on"
+
+# Source profile
+if [ -f ~/.profile ]; then
+	. ~/.profile
+fi

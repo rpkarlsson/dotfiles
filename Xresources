@@ -1,5 +1,0 @@
-Emacs.default.attributeHeight: 94
-
-URxvt.cursorBlink: false
-URxvt.font: xft:consolas:size=9
-URxvt.scrollBar: false

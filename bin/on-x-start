@@ -1,8 +1,0 @@
-#background
-feh --bg-scale ~/Pictures/background.jpg
-
-# xflux
-killall xflux
-xflux -l 56 -g 14
-
-emacs --daemon

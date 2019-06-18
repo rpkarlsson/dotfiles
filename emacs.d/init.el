@@ -37,6 +37,14 @@ There are two things you can do about this warning:
 (use-package better-defaults
   :ensure t)
 
+(use-package clj-refactor
+  :ensure t
+  :config
+  (define-key input-decode-map [?\C-m] [C-m]) ;; Do not treat C-m as RET
+  (add-hook 'clojure-mode-hook (lambda ()
+                                 (clj-refactor-mode 1)
+                                 (cljr-add-keybindings-with-prefix "C-c C-m"))))
+
 (use-package clojure-mode
   :ensure t
   :pin melpa
@@ -118,12 +126,49 @@ There are two things you can do about this warning:
     (define-key org-mode-map "\M-j" #'org-metadown)
     (define-key org-mode-map "\M-k" #'org-metaup)
     (define-key org-mode-map "\M-h" #'org-metaleft)
-    (define-key org-mode-map "\M-l" #'org-metaright))
+    (define-key org-mode-map "\M-l" #'org-metaright)
+    (define-key global-map "\C-ca" 'org-agenda)
+    (define-key global-map "\C-cc" 'org-capture))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (sql . t)
+     (sqlite . t)
+     (ruby . t)
+     (scheme . t)
+     (java . t)
+     (clojure . t)
+     (python . t)))
   (add-hook 'org-mode-hook (lambda ()
-                                        ;(org-bullets-mode 1)
                              (auto-fill-mode 1)
                              (setq org-src-fontify-natively t)
-                             (org-custom-keys))))
+                             (org-custom-keys)))
+  (setq org-agenda-files (list "~/Documents/work.org" "~/Documents/home.org"))
+  (setq org-capture-templates
+        '(("t" "Personal Task" entry (file "~/Documents/home.org")
+           "* TODO %?" :emptylines 1)
+          ("A" "Appointment -  Home" entry (file+headline "~/Documents/home.org" "Appointments")
+           "** %?\n   %T" :empty-lines 1)
+          ("p" "Punch In" entry (file+headline "~/Documents/work.org" "log")
+           "* %u \n %?" :clock-in t :clock-keep t)
+          ("w" "Work-related Task" entry (file "~/Documents/work.org")
+           "* TODO %?" :emptylines 1)
+          ("a" "Appointment -  work" entry (file+headline "~/Documents/work.org" "Appointments")
+           "** %?\n   %T" :empty-lines 1)
+          ("b" "Bookmark" entry (file+headline "~/Documents/home.org" "Bookmarks")
+           "* %?\n :PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1))))
+
+(use-package evil-org
+  :ensure t
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda ()
+              (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 (use-package paredit
   :ensure t)
@@ -249,11 +294,16 @@ There are two things you can do about this warning:
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
+(setq ag-reuse-window 't)
 
 (push '(" fn ") prettify-symbols-alist)
 (global-prettify-symbols-mode +1)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(setq cider-offer-to-open-cljs-app-in-browser nil)
+
+(setq dired-listing-switches "-alh")
 
 ;; Focus buffer
 (defvar window-split-saved-config nil)
@@ -294,15 +344,40 @@ There are two things you can do about this warning:
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
+;; TODO fix
+;; (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
+;; (setq inf-clojure-generic-cmd "planck -d")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(elfeed-feeds (quote ("http://insideclojure.org/feed.xml")))
+ '(ansi-color-names-vector
+   ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
+ '(custom-safe-themes
+   (quote
+    ("d97baf5a34c87b05508739505cad03438cde8efa2a0d350c7773f2a8bc26a50d" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "cc0dbb53a10215b696d391a90de635ba1699072745bf653b53774706999208e3" "3e335d794ed3030fefd0dbd7ff2d3555e29481fe4bbb0106ea11c660d6001767" default)))
+ '(elfeed-feeds
+   (quote
+    ("https://nullprogram.com/feed/" "https://planet.emacslife.com/atom.xml" "http://fetchrss.com/rss/5ce3c0e18a93f86d578b45675ce3c0a78a93f812558b4567.xml" "http://endlessparentheses.com/atom.xml" "http://insideclojure.org/feed.xml")))
+ '(evil-collection-outline-bind-tab-p nil)
+ '(org-agenda-files (quote ("~/Documents/home.org" "~/Documents/work.org")))
  '(package-selected-packages
    (quote
-    (elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))))
+    (telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org org-static-blog cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil)))
+ '(safe-local-variable-values
+   (quote
+    ((org-static-blog-publish-title . "rpkn.se")
+     (cider-default-cljs-repl . "shadow")
+     (cider-preferred-build-tool 1)
+     (cider-preferred-build-tool quote shadow-cljs)
+     (cider-default-cljs-repl . "Shadow")
+     (cider-preferred-build-tool shadow-cljs)
+     (cider-preferred-build-tool
+      (quote shadow-cljs))
+     (cider-preferred-build-tool "shadow-cljs")
+     (cider-default-cljs-repl "Shadow")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
