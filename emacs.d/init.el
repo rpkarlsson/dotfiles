@@ -151,7 +151,7 @@ There are two things you can do about this warning:
           ("A" "Appointment -  Home" entry (file+headline "~/Documents/home.org" "Appointments")
            "** %?\n   %T" :empty-lines 1)
           ("p" "Punch In" entry (file+headline "~/Documents/work.org" "log")
-           "* %u \n %?" :clock-in t :clock-keep t)
+           "* %u \n %?\n\n" :clock-in t :clock-keep t :empty-lines 1)
           ("w" "Work-related Task" entry (file "~/Documents/work.org")
            "* TODO %?" :emptylines 1)
           ("a" "Appointment -  work" entry (file+headline "~/Documents/work.org" "Appointments")
@@ -294,7 +294,9 @@ There are two things you can do about this warning:
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
-(setq ag-reuse-window 't)
+(setq ag-reuse-window 't
+      frame-title-format "emacs – %b" ;; Put buffer name in titlebar
+      initial-scratch-message nil)
 
 (push '(" fn ") prettify-symbols-alist)
 (global-prettify-symbols-mode +1)
@@ -362,10 +364,10 @@ There are two things you can do about this warning:
    (quote
     ("https://nullprogram.com/feed/" "https://planet.emacslife.com/atom.xml" "http://fetchrss.com/rss/5ce3c0e18a93f86d578b45675ce3c0a78a93f812558b4567.xml" "http://endlessparentheses.com/atom.xml" "http://insideclojure.org/feed.xml")))
  '(evil-collection-outline-bind-tab-p nil)
- '(org-agenda-files (quote ("~/Documents/home.org" "~/Documents/work.org")))
+ '(org-agenda-files (quote ("~/Documents/work.org" "~/Documents/home.org")))
  '(package-selected-packages
    (quote
-    (telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org org-static-blog cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil)))
+    (ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org org-static-blog cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil)))
  '(safe-local-variable-values
    (quote
     ((org-static-blog-publish-title . "rpkn.se")
