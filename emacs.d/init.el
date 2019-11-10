@@ -11,19 +11,14 @@ There are two things you can do about this warning:
 2. Remove this warning from your init file so you won't see it again."))
   ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  )
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
 
 (package-initialize)
 
-;;; Notes
-;; Do I need hippieexpand?
-;;
-
 (eval-when-compile
   ;; Following line is not needed if use-package.el is in ~/.emacs.d
-  (add-to-list 'load-path "<path where use-package is installed>")
+;;  (add-to-list 'load-path "<path where use-package is installed>")
+;;  (add-to-list 'load-path "~/.emacs.d/elpa")
   (require 'use-package))
 
 ;;
@@ -40,7 +35,8 @@ There are two things you can do about this warning:
 (use-package clj-refactor
   :ensure t
   :config
-  (define-key input-decode-map [?\C-m] [C-m]) ;; Do not treat C-m as RET
+  ;; (define-key input-decode-map [?\C-m] [C-m])
+  ;; Do not treat C-m as RET
   (add-hook 'clojure-mode-hook (lambda ()
                                  (clj-refactor-mode 1)
                                  (cljr-add-keybindings-with-prefix "C-c C-m"))))
@@ -51,20 +47,76 @@ There are two things you can do about this warning:
   :config
   (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
-  (add-hook 'clojure-mode-hook 'enable-paredit-mode))
+  (add-hook 'clojure-mode-hook 'enable-paredit-mode)
+  (require 'flycheck-clj-kondo))
 
 (use-package cider
   :ensure t
+  :pin melpa
+  ;; :load-path "~/Projects/cider"
   :config
-  (setq cider-repl-pop-to-buffer-on-connect t)
-  ;; (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
-  ;; (add-hook 'clojure-mode-hook 'enable-paredit-mode)
-  )
+  (setq cider-repl-pop-to-buffer-on-connect t))
 
 (use-package clojure-mode-extra-font-locking
   :ensure t)
+
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode)
+  (setq company-idle-delay nil)
+  (add-hook 'cider-repl-mode-hook #'company-mode)
+  (add-hook 'cider-mode-hook #'company-mode))
+
+(use-package elfeed
+  :config
+ (defun elfeed-show-refresh--mail-style ()
+  "Update the buffer to match the selected entry, using a mail-style."
+  (interactive)
+  (let* ((inhibit-read-only t)
+         (title (elfeed-entry-title elfeed-show-entry))
+         (date (seconds-to-time (elfeed-entry-date elfeed-show-entry)))
+         (authors (elfeed-meta elfeed-show-entry :authors))
+         (link (elfeed-entry-link elfeed-show-entry))
+         (tags (elfeed-entry-tags elfeed-show-entry))
+         (tagsstr (mapconcat #'symbol-name tags ", "))
+         (nicedate (format-time-string "%a, %e %b %Y %T %Z" date))
+         (content (elfeed-deref (elfeed-entry-content elfeed-show-entry)))
+         (type (elfeed-entry-content-type elfeed-show-entry))
+         (feed (elfeed-entry-feed elfeed-show-entry))
+         (feed-title (elfeed-feed-title feed))
+         (base (and feed (elfeed-compute-base (elfeed-feed-url feed)))))
+    (erase-buffer)
+    (insert (format (propertize "Title: %s\n" 'face 'message-header-name)
+                    (propertize title 'face 'message-header-subject)))
+    (when elfeed-show-entry-author
+      (dolist (author authors)
+        (let ((formatted (elfeed--show-format-author author)))
+          (insert
+           (format (propertize "Author: %s\n" 'face 'message-header-name)
+                   (propertize formatted 'face 'message-header-to))))))
+    (insert (format (propertize "Date: %s\n" 'face 'message-header-name)
+                    (propertize nicedate 'face 'message-header-other)))
+    (insert (format (propertize "Feed: %s\n" 'face 'message-header-name)
+                    (propertize feed-title 'face 'message-header-other)))
+    (when tags
+      (insert (format (propertize "Tags: %s\n" 'face 'message-header-name)
+                      (propertize tagsstr 'face 'message-header-other))))
+    (insert (propertize "Link: " 'face 'message-header-name))
+    (elfeed-insert-link link link)
+    (insert "\n")
+    (cl-loop for enclosure in (elfeed-entry-enclosures elfeed-show-entry)
+             do (insert (propertize "Enclosure: " 'face 'message-header-name))
+             do (elfeed-insert-link (car enclosure))
+             do (insert "\n"))
+    (insert "\n")
+    (if content
+        (if (eq type 'html)
+            (elfeed-insert-html content base)
+          (insert content))
+      (insert (propertize "(empty)\n" 'face 'italic)))
+    (fill-region (point-min) (point-max))
+    (goto-char (point-min)))))
 
 (use-package evil
   :ensure t
@@ -73,11 +125,7 @@ There are two things you can do about this warning:
   (setq evil-want-keybinding nil)
   :config
   (evil-mode 1)
-  (define-key evil-normal-state-map  "\M-." 'nil)
-  ;; (eval-after-load "evil-maps"
-  ;; '(progn
-  ;;    ))
-  )
+  (define-key evil-normal-state-map  "\M-." 'nil))
 
 (use-package evil-collection
   :ensure t
@@ -96,6 +144,7 @@ There are two things you can do about this warning:
   :config
   (global-evil-surround-mode 1))
 
+
 (use-package ido-completing-read+
   :ensure t
   :config
@@ -107,8 +156,65 @@ There are two things you can do about this warning:
   (ido-vertical-mode 1)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
+;; Ido
+(ido-mode t)
+(setq ido-enable-flex-matching t)
+(setq ido-use-filename-at-point nil)
+(setq ido-auto-merge-work-directories-length -1)
+;; (setq ido-use-virtual-buffers t)
+
+(use-package smex
+  :ensure t
+  :config
+  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+  (smex-initialize)
+  (global-set-key (kbd "M-x") 'smex))
+
+(use-package flycheck-clj-kondo
+  :ensure t)
+
+;; Fix ivy/counsel fuzzy search
+;; Maybe?
+;; (use-package flx
+;;   :ensure t)
+
+; Counsel, Ivy, Swiper
+;; (use-package counsel
+;;   :ensure t
+;;   :bind (("C-s" . swiper)
+;;          ("M-x" . counsel-M-x)
+;;          ("C-x C-f" . counsel-find-file)
+;;          ("<f1> f" . counsel-describe-function)
+;;          ("<f1> v" . counsel-describe-variable)
+;;          ("<f1> l" . counsel-find-library)
+;;          ("<f2> i" . counsel-info-lookup-symbol)
+;;          ("<f2> u" . counsel-unicode-char)
+;;          ("C-c c" . counsel-compile)
+;;          ("C-c g" . counsel-git)
+;;          ("C-c j" . counsel-git-grep)
+;;          ("C-c k" . counsel-ag)
+;;          ("C-x b" . counsel-ibuffer)
+;;          ("C-x l" . counsel-locate)
+;;          ("C-S-o" . counsel-rhythmbox)
+;;          ("C-c C-r" . ivy-resume)
+;;          ("C-x C-d" . counsel-dired)
+;;          )
+;;   :config
+;;   (setq ivy-use-virtual-buffers t)
+;;   (setq ivy-count-format "(%d/%d) ")
+;;   (setq ivy-initial-inputs-alist nil)
+;;   (setq ivy-re-builders-alist
+;;         '((swiper . ivy--regex-plus)
+;;           (t . ivy--regex-fuzzy)
+;;           ))
+;;   (ivy-mode 1))
+
 (use-package magit
   :ensure t)
+
+(use-package minions
+  :ensure t
+  :config (minions-mode 1))
 
 (use-package ob-shell
   :after evil)
@@ -157,7 +263,9 @@ There are two things you can do about this warning:
           ("a" "Appointment -  work" entry (file+headline "~/Documents/work.org" "Appointments")
            "** %?\n   %T" :empty-lines 1)
           ("b" "Bookmark" entry (file+headline "~/Documents/home.org" "Bookmarks")
-           "* %?\n :PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1))))
+           "* %?\n :PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+          ("n" "New note" entry (file+headline "~/Documents/work.org" "Refile")
+           "" :empty-lines 1))))
 
 (use-package evil-org
   :ensure t
@@ -180,19 +288,14 @@ There are two things you can do about this warning:
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-indexing-method 'hybrid) ;; Use .projectile files
+  ;(setq projectile-completion-system 'ivy)
+  ;(setq projectile-completion-system 'ido)
   ;(projectile-global-mode)
   )
 
 (use-package uniquify
   :config
   (setq uniquify-buffer-name-style 'forward))
-
-(use-package smex
-  :ensure t
-  :config
-  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
-  (smex-initialize)
-  (global-set-key (kbd "M-x") 'smex))
 
 (use-package slime
   :ensure t
@@ -267,9 +370,6 @@ There are two things you can do about this warning:
 (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-
-;eldoc-mode shows documentation in the minibuffer when writing code http://www.emacswiki.org/emacs/ElDoc
-
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
@@ -280,7 +380,6 @@ There are two things you can do about this warning:
 (blink-cursor-mode 0)
 (setq ring-bell-function 'ignore)
 (setq inhibit-splash-screen t)
-;(set-face-attribute 'default nil :height 110)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq vc-follow-symlinks t)
@@ -307,6 +406,10 @@ There are two things you can do about this warning:
 
 (setq dired-listing-switches "-alh")
 
+(setq display-time-day-and-date t
+      display-time-24hr-format t)
+(display-time-mode 1)
+
 ;; Focus buffer
 (defvar window-split-saved-config nil)
 (defun window-split-toggle-one-window ()
@@ -328,13 +431,6 @@ There are two things you can do about this warning:
 ;; Save clipboard strings into kill ring before replacing them. When one selects something in another program to paste it into Emacs, but kills something in Emacs before actually pasting it, this selection is gone unless this variable is non-nil
 (setq save-interprogram-paste-before-kill t)
 
-;; Ido
-(ido-mode t)
-(setq ido-enable-flex-matching t)
-(setq ido-use-filename-at-point nil)
-(setq ido-auto-merge-work-directories-length -1)
-;; (setq ido-use-virtual-buffers t)
-
 ;; Keys
 (defun toggle-comment-on-line ()
   "comment or uncomment current line"
@@ -342,13 +438,17 @@ There are two things you can do about this warning:
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 (global-set-key (kbd "C-;") 'toggle-comment-on-line)
 
-(defun rk-init.el ()
+(defun open-init.el ()
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
-;; TODO fix
-;; (add-hook 'clojure-mode-hook #'inf-clojure-minor-mode)
-;; (setq inf-clojure-generic-cmd "planck -d")
+(defun open-work.org ()
+  (interactive)
+  (find-file "~/Documents/work.org"))
+
+;; Fill paragraph before showing
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -358,28 +458,33 @@ There are two things you can do about this warning:
  '(ansi-color-names-vector
    ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
  '(custom-safe-themes
-   (quote
-    ("d97baf5a34c87b05508739505cad03438cde8efa2a0d350c7773f2a8bc26a50d" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "cc0dbb53a10215b696d391a90de635ba1699072745bf653b53774706999208e3" "3e335d794ed3030fefd0dbd7ff2d3555e29481fe4bbb0106ea11c660d6001767" default)))
+   '("53760e1863395dedf3823564cbd2356e9345e6c74458dcc8ba171c039c7144ed" "e62b66040cb90a4171aa7368aced4ab9d8663956a62a5590252b0bc19adde6bd" "d97baf5a34c87b05508739505cad03438cde8efa2a0d350c7773f2a8bc26a50d" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "cc0dbb53a10215b696d391a90de635ba1699072745bf653b53774706999208e3" "3e335d794ed3030fefd0dbd7ff2d3555e29481fe4bbb0106ea11c660d6001767" default))
  '(elfeed-feeds
-   (quote
-    ("https://nullprogram.com/feed/" "https://planet.emacslife.com/atom.xml" "http://fetchrss.com/rss/5ce3c0e18a93f86d578b45675ce3c0a78a93f812558b4567.xml" "http://endlessparentheses.com/atom.xml" "http://insideclojure.org/feed.xml")))
+   '("https://feeds.therepl.net/therepl" "feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss" "https://lispcast.com/feed/podcast/thoughts-functional-programming/" "https://clojuredesign.club/index.xml" "https://nullprogram.com/feed/" "https://planet.emacslife.com/atom.xml" "http://fetchrss.com/rss/5ce3c0e18a93f86d578b45675ce3c0a78a93f812558b4567.xml" "http://endlessparentheses.com/atom.xml" "http://insideclojure.org/feed.xml"))
  '(evil-collection-outline-bind-tab-p nil)
- '(org-agenda-files (quote ("~/Documents/work.org" "~/Documents/home.org")))
+ '(org-agenda-files '("~/Documents/work.org" "~/Documents/home.org"))
  '(package-selected-packages
-   (quote
-    (ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org org-static-blog cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil)))
+   '(counsel flx clojure-snippets company multi-term minions flycheck-clj-kondo emms-player-simple-mpv emms ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))
  '(safe-local-variable-values
-   (quote
-    ((org-static-blog-publish-title . "rpkn.se")
+   '((projectile-switch-project-action lambda nil
+                                       (message "Runs"))
+     (projectile-switch-project-action . rk-projectile-find)
+     (projectile-switch-project-action quote rk-projectile-find)
+     (projectile-switch-project-action lambda nil
+                                       (find-file "src/geoserver/repl.clj"))
+     (projectile-switch-project-action lambda nil
+                                       (projectile-find-file ".gitignore"))
+     (projectile-current-project-in-switch lambda nil
+                                           (projectile-find-file ".gitignore"))
+     (org-static-blog-publish-title . "rpkn.se")
      (cider-default-cljs-repl . "shadow")
      (cider-preferred-build-tool 1)
      (cider-preferred-build-tool quote shadow-cljs)
      (cider-default-cljs-repl . "Shadow")
      (cider-preferred-build-tool shadow-cljs)
-     (cider-preferred-build-tool
-      (quote shadow-cljs))
+     (cider-preferred-build-tool 'shadow-cljs)
      (cider-preferred-build-tool "shadow-cljs")
-     (cider-default-cljs-repl "Shadow")))))
+     (cider-default-cljs-repl "Shadow"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
