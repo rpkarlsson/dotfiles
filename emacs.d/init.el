@@ -64,59 +64,13 @@ There are two things you can do about this warning:
   :ensure t
   :config
   (global-company-mode)
-  (setq company-idle-delay nil)
+  ;; (setq company-idle-delay nil)
+  (setq company-idle-delay 1)
+  (add-hook 'clojurescript-mode-hook (lambda () (setq company-idle-delay nil)))
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode))
 
-(use-package elfeed
-  :config
- (defun elfeed-show-refresh--mail-style ()
-  "Update the buffer to match the selected entry, using a mail-style."
-  (interactive)
-  (let* ((inhibit-read-only t)
-         (title (elfeed-entry-title elfeed-show-entry))
-         (date (seconds-to-time (elfeed-entry-date elfeed-show-entry)))
-         (authors (elfeed-meta elfeed-show-entry :authors))
-         (link (elfeed-entry-link elfeed-show-entry))
-         (tags (elfeed-entry-tags elfeed-show-entry))
-         (tagsstr (mapconcat #'symbol-name tags ", "))
-         (nicedate (format-time-string "%a, %e %b %Y %T %Z" date))
-         (content (elfeed-deref (elfeed-entry-content elfeed-show-entry)))
-         (type (elfeed-entry-content-type elfeed-show-entry))
-         (feed (elfeed-entry-feed elfeed-show-entry))
-         (feed-title (elfeed-feed-title feed))
-         (base (and feed (elfeed-compute-base (elfeed-feed-url feed)))))
-    (erase-buffer)
-    (insert (format (propertize "Title: %s\n" 'face 'message-header-name)
-                    (propertize title 'face 'message-header-subject)))
-    (when elfeed-show-entry-author
-      (dolist (author authors)
-        (let ((formatted (elfeed--show-format-author author)))
-          (insert
-           (format (propertize "Author: %s\n" 'face 'message-header-name)
-                   (propertize formatted 'face 'message-header-to))))))
-    (insert (format (propertize "Date: %s\n" 'face 'message-header-name)
-                    (propertize nicedate 'face 'message-header-other)))
-    (insert (format (propertize "Feed: %s\n" 'face 'message-header-name)
-                    (propertize feed-title 'face 'message-header-other)))
-    (when tags
-      (insert (format (propertize "Tags: %s\n" 'face 'message-header-name)
-                      (propertize tagsstr 'face 'message-header-other))))
-    (insert (propertize "Link: " 'face 'message-header-name))
-    (elfeed-insert-link link link)
-    (insert "\n")
-    (cl-loop for enclosure in (elfeed-entry-enclosures elfeed-show-entry)
-             do (insert (propertize "Enclosure: " 'face 'message-header-name))
-             do (elfeed-insert-link (car enclosure))
-             do (insert "\n"))
-    (insert "\n")
-    (if content
-        (if (eq type 'html)
-            (elfeed-insert-html content base)
-          (insert content))
-      (insert (propertize "(empty)\n" 'face 'italic)))
-    (fill-region (point-min) (point-max))
-    (goto-char (point-min)))))
+(use-package elfeed)
 
 (use-package evil
   :ensure t
@@ -143,7 +97,6 @@ There are two things you can do about this warning:
   :ensure t
   :config
   (global-evil-surround-mode 1))
-
 
 (use-package ido-completing-read+
   :ensure t
@@ -220,7 +173,6 @@ There are two things you can do about this warning:
   :after evil)
 
 (defun org-custom-keys ()
-  "Use n/p instead of arrow keys for moving items since they are unbinded."
   (local-set-key (kbd "M-n") #'org-metadown)
   (local-set-key (kbd "M-p") #'org-metaup))
 
@@ -281,6 +233,16 @@ There are two things you can do about this warning:
 (use-package paredit
   :ensure t)
 
+;; (use-package powerline
+;;   :ensure t
+;;   :config
+;;   (powerline-center-evil-theme))
+
+(use-package telephone-line
+  :ensure t
+  :config
+  (telephone-line-mode 1))
+
 (use-package projectile
   :ensure t
   :config
@@ -319,6 +281,10 @@ There are two things you can do about this warning:
   (setq slime-complete-symbol*-fancy t)
   (setq slime-complete-symbol-function
         'slime-fuzzy-complete-symbol))
+
+(use-package avy
+  :ensure t
+  :bind ("C-s" . avy-goto-char))
 
 ;;
 ;; Lib
@@ -446,9 +412,36 @@ There are two things you can do about this warning:
   (interactive)
   (find-file "~/Documents/work.org"))
 
-;; Fill paragraph before showing
+(defun rk-toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+         (next-win-buffer (window-buffer (next-window)))
+         (this-win-edges (window-edges (selected-window)))
+         (next-win-edges (window-edges (next-window)))
+         (this-win-2nd (not (and (<= (car this-win-edges)
+                     (car next-win-edges))
+                     (<= (cadr this-win-edges)
+                     (cadr next-win-edges)))))
+         (splitter
+          (if (= (car this-win-edges)
+             (car (window-edges (next-window))))
+          'split-window-horizontally
+        'split-window-vertically)))
+    (delete-other-windows)
+    (let ((first-win (selected-window)))
+      (funcall splitter)
+      (if this-win-2nd (other-window 1))
+      (set-window-buffer (selected-window) this-win-buffer)
+      (set-window-buffer (next-window) next-win-buffer)
+      (select-window first-win)
+      (if this-win-2nd (other-window 1))))))
 
-
+  (defun rk-create-tags (dir-name)
+    "Create tags file."
+    (interactive "DDirectory: ")
+    (shell-command
+     (format "ctags -f TAGS -e -R %s" (directory-file-name dir-name))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -464,7 +457,7 @@ There are two things you can do about this warning:
  '(evil-collection-outline-bind-tab-p nil)
  '(org-agenda-files '("~/Documents/work.org" "~/Documents/home.org"))
  '(package-selected-packages
-   '(counsel flx clojure-snippets company multi-term minions flycheck-clj-kondo emms-player-simple-mpv emms ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))
+   '(powerline org-bullets meson-mode counsel flx clojure-snippets company multi-term minions flycheck-clj-kondo emms-player-simple-mpv emms ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))
  '(safe-local-variable-values
    '((projectile-switch-project-action lambda nil
                                        (message "Runs"))
@@ -491,3 +484,4 @@ There are two things you can do about this warning:
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'dired-find-alternate-file 'disabled nil)
