@@ -15,15 +15,21 @@ There are two things you can do about this warning:
 
 (package-initialize)
 
+(defun load-directory (dir)
+  (let ((load-it (lambda (f)
+                   (load-file (concat (file-name-as-directory dir) f)))))
+    (mapc load-it (directory-files dir nil "\\.el$"))))
+(load-directory "~/.emacs.d/lib/")
+
+(setenv "PATH" (concat (getenv "PATH") ":/home/rpkarlsson/bin"))
+(setq exec-path (append exec-path '("/home/rpkarlsson/bin")))
+
 (eval-when-compile
   ;; Following line is not needed if use-package.el is in ~/.emacs.d
 ;;  (add-to-list 'load-path "<path where use-package is installed>")
 ;;  (add-to-list 'load-path "~/.emacs.d/elpa")
   (require 'use-package))
 
-;;
-;; Packages
-;;
 (use-package ace-window
   :ensure t
   :config
@@ -62,13 +68,24 @@ There are two things you can do about this warning:
 
 (use-package company
   :ensure t
+  :custom
+  (cider-enhanced-cljs-completion-p nil)
   :config
   (global-company-mode)
-  ;; (setq company-idle-delay nil)
-  (setq company-idle-delay 1)
-  (add-hook 'clojurescript-mode-hook (lambda () (setq company-idle-delay nil)))
+  ;; (add-hook 'clojurescript-mode-hook (lambda () (setq company-idle-delay nil)))
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode))
+
+;; https://github.com/jacktasia/dumb-jump
+(use-package dumb-jump
+  :bind (("M-g o" . dumb-jump-go-other-window)
+         ("M-g j" . dumb-jump-go)
+         ("M-g b" . dumb-jump-back)
+         ("M-g i" . dumb-jump-go-prompt)
+         ("M-g x" . dumb-jump-go-prefer-external)
+         ("M-g z" . dumb-jump-go-prefer-external-other-window))
+  :config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+  :ensure)
 
 (use-package elfeed)
 
@@ -98,69 +115,128 @@ There are two things you can do about this warning:
   :config
   (global-evil-surround-mode 1))
 
-(use-package ido-completing-read+
-  :ensure t
-  :config
-  (ido-ubiquitous-mode 1))
+;; Replaced witch Counsel, Ivy and Swiper
+;; (use-package ido-completing-read+
+;;   :ensure t
+;;   :config
+;;   (ido-ubiquitous-mode 1))
 
-(use-package ido-vertical-mode
-  :ensure t
-  :config
-  (ido-vertical-mode 1)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
+;; (use-package ido-vertical-mode
+;;   :ensure t
+;;   :config
+;;   (ido-vertical-mode 1)
+;;   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
-;; Ido
-(ido-mode t)
-(setq ido-enable-flex-matching t)
-(setq ido-use-filename-at-point nil)
-(setq ido-auto-merge-work-directories-length -1)
-;; (setq ido-use-virtual-buffers t)
+;; ;; Ido
+;; (ido-mode t)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-use-filename-at-point nil)
+;; (setq ido-auto-merge-work-directories-length -1)
+;; ;; (setq ido-use-virtual-buffers t)
 
-(use-package smex
-  :ensure t
-  :config
-  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
-  (smex-initialize)
-  (global-set-key (kbd "M-x") 'smex))
+;; (use-package smex
+;;   :ensure t
+;;   :config
+;;   (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+;;   (smex-initialize)
+;;   (global-set-key (kbd "M-x") 'smex))
 
 (use-package flycheck-clj-kondo
   :ensure t)
 
-;; Fix ivy/counsel fuzzy search
-;; Maybe?
-;; (use-package flx
-;;   :ensure t)
+(use-package ivy
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-count-format "(%d/%d) ")
+  (ivy-initial-inputs-alist nil)
+  (ivy-fixed-height-minibuffer nil)
+  (ivy-display-style 'fancy)
+  (ivy-re-builders-alist
+   '((counsel-projectile-ag . ivy--regex-plus))
+   '((t . ivy--regex-fuzzy)))
+  (ivy-mode 1))
 
-; Counsel, Ivy, Swiper
-;; (use-package counsel
+(use-package ivy-posframe
+  :ensure t
+  :after ivy
+  :custom
+  (ivy-posframe-height-alist
+   '((swiper . 15)
+     (swiper-isearch . 15)
+     (t . 10)))
+  (ivy-posframe-display-functions-alist
+   '((complete-symbol . ivy-posframe-display-at-point)
+     (swiper . nil)
+     (swiper-isearch . nil)
+     (t . ivy-posframe-display-at-frame-center)))
+  :config
+  (ivy-posframe-mode 1))
+
+(use-package counsel
+  :ensure t
+  :after ivy
+  :bind
+  (("C-s" . swiper)
+   ("M-x" . counsel-M-x)
+   ("C-x C-f" . counsel-find-file)
+   ("<f1> f" . counsel-describe-function)
+   ("<f1> v" . counsel-describe-variable)
+   ("<f1> l" . counsel-find-library)
+   ("<f2> i" . counsel-info-lookup-symbol)
+   ("<f2> u" . counsel-unicode-char)
+   ("C-c c" . counsel-compile)
+   ("C-c g" . counsel-git)
+   ("C-c j" . counsel-git-grep)
+   ("C-c k" . counsel-ag)
+   ("C-x b" . ivy-switch-buffer) ;; counsel-ibuffer
+   ("C-x l" . counsel-locate)
+   ("C-S-o" . counsel-rhythmbox)
+   ("C-c C-r" . ivy-resume)
+   ("C-x C-d" . counsel-dired))
+  :config
+  (counsel-projectile-mode))
+
+(use-package counsel-projectile
+  :ensure t
+  :after counsel)
+
+;; (use-package prescient
 ;;   :ensure t
-;;   :bind (("C-s" . swiper)
-;;          ("M-x" . counsel-M-x)
-;;          ("C-x C-f" . counsel-find-file)
-;;          ("<f1> f" . counsel-describe-function)
-;;          ("<f1> v" . counsel-describe-variable)
-;;          ("<f1> l" . counsel-find-library)
-;;          ("<f2> i" . counsel-info-lookup-symbol)
-;;          ("<f2> u" . counsel-unicode-char)
-;;          ("C-c c" . counsel-compile)
-;;          ("C-c g" . counsel-git)
-;;          ("C-c j" . counsel-git-grep)
-;;          ("C-c k" . counsel-ag)
-;;          ("C-x b" . counsel-ibuffer)
-;;          ("C-x l" . counsel-locate)
-;;          ("C-S-o" . counsel-rhythmbox)
-;;          ("C-c C-r" . ivy-resume)
-;;          ("C-x C-d" . counsel-dired)
-;;          )
+;;   :custom
+;;   (prescient-history-length 50)
+;;   (prescient-save-file "~/.emacs.d/prescient-items")
+;;   (prescient-filter-method '(fuzzy initialism regexp))
 ;;   :config
-;;   (setq ivy-use-virtual-buffers t)
-;;   (setq ivy-count-format "(%d/%d) ")
-;;   (setq ivy-initial-inputs-alist nil)
-;;   (setq ivy-re-builders-alist
-;;         '((swiper . ivy--regex-plus)
-;;           (t . ivy--regex-fuzzy)
-;;           ))
-;;   (ivy-mode 1))
+;;   (prescient-persist-mode 1))
+
+;; (use-package ivy-prescient
+;;   :ensure t
+;;   :after (prescient ivy)
+;;   :custom
+;;   (prescient-filter-method '(fuzzy regexp initialism))
+;;   ;; (ivy-prescient-sort-commands
+;;   ;;  '(:not swiper ivy-switch-buffer counsel-switch-buffer))
+;;   (ivy-prescient-retain-classic-highlighting t)
+;;   (ivy-prescient-enable-filtering t)
+;;   (ivy-prescient-enable-sorting t)
+;;   :config
+;; ;; (defun prot/ivy-prescient-filters (str)
+;; ;;   "Specify an exception for `prescient-filter-method'.
+
+;; ;; This new rule can be used to tailor the results of individual
+;; ;; Ivy-powered commands, using `ivy-prescient-re-builder'."
+;; ;;     (let ((prescient-filter-method '(literal regexp)))
+;; ;;       (ivy-prescient-re-builder str)))
+
+;; ;;   (setq ivy-re-builders-alist
+;; ;;         '((counsel-rg . prot/ivy-prescient-filters)
+;; ;;           (counsel-grep . prot/ivy-prescient-filters)
+;; ;;           (counsel-yank-pop . prot/ivy-prescient-filters)
+;; ;;           (swiper . prot/ivy-prescient-filters)
+;; ;;           (swiper-isearch . prot/ivy-prescient-filters)
+;; ;;           (swiper-all . prot/ivy-prescient-filters)
+;; ;;           (t . ivy-prescient-re-builder)))
+;;   (ivy-prescient-mode 1))
 
 (use-package magit
   :ensure t)
@@ -226,22 +302,26 @@ There are two things you can do about this warning:
   (add-hook 'org-mode-hook 'evil-org-mode)
   (add-hook 'evil-org-mode-hook
             (lambda ()
-              (evil-org-set-key-theme)))
-  (require 'evil-org-agenda)
+              (evil-org-set-key-theme))))
+
+(use-package evil-org-agenda
+  :config
   (evil-org-agenda-set-keys))
 
 (use-package paredit
   :ensure t)
 
-;; (use-package powerline
-;;   :ensure t
-;;   :config
-;;   (powerline-center-evil-theme))
-
-(use-package telephone-line
+(use-package solarized-theme
   :ensure t
   :config
-  (telephone-line-mode 1))
+  (load-theme 'solarized-light t)
+  (let ((line (face-attribute 'mode-line :underline)))
+    (set-face-attribute 'mode-line          nil :overline   line)
+    (set-face-attribute 'mode-line-inactive nil :overline   line)
+    (set-face-attribute 'mode-line-inactive nil :underline  line)
+    (set-face-attribute 'mode-line          nil :box        nil)
+    (set-face-attribute 'mode-line-inactive nil :box        nil)
+    (set-face-attribute 'mode-line-inactive nil :background "#f9f2d9")))
 
 (use-package projectile
   :ensure t
@@ -250,10 +330,7 @@ There are two things you can do about this warning:
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-indexing-method 'hybrid) ;; Use .projectile files
-  ;(setq projectile-completion-system 'ivy)
-  ;(setq projectile-completion-system 'ido)
-  ;(projectile-global-mode)
-  )
+  (setq projectile-completion-system 'ivy))
 
 (use-package uniquify
   :config
@@ -282,20 +359,6 @@ There are two things you can do about this warning:
   (setq slime-complete-symbol-function
         'slime-fuzzy-complete-symbol))
 
-(use-package avy
-  :ensure t
-  :bind ("C-s" . avy-goto-char))
-
-;;
-;; Lib
-;;
-(defun load-directory (dir)
-  (let ((load-it (lambda (f)
-                   (load-file (concat (file-name-as-directory dir) f)))))
-    (mapc load-it (directory-files dir nil "\\.el$"))))
-(load-directory "~/.emacs.d/lib/")
-
-;;
 ;; Backups
 ;;
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
