@@ -4,7 +4,7 @@
 # If not, do "killall swaybar" and $mod+Shift+c to reload the configuration.
 date_formatted=$(date "+%a %F %H:%M")
 
-battery_status=$(cat /sys/class/power_supply/BAT0/capacity)
+battery_status=$(cat /sys/class/power_supply/BAT1/capacity)
 
 # "amixer -M" gets the mapped volume for evaluating the percentage which
 # is more natural to the human ear according to "man amixer".
