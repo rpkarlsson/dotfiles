@@ -16,20 +16,10 @@ set $down j
 set $up k
 set $right L
 
-# Your preferred terminal emulator
-# set $term urxvt256c
-set $term gnome-terminal
-
-# Your preferred application launcher
-# Note: it's recommended that you pass the final command to sway
-# set $menu dmenu_path | dmenu | xargs swaymsg exec -- #
-# Original:
-set $menu rofi -show run | xargs swaymsg exec -- #
-
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg ~/Pictures/wallpaper.jpg fill
+# output * bg ~/Pictures/wallpaper.jpg fill
 output eDP-1 resolution 1920x1080 position 0,0
 output DP-6 resolution 2560x1440 position 1920,0
 # Conference room
@@ -244,6 +234,7 @@ default_floating_border normal
 hide_edge_borders smart
 
 # Startup
-exec --no-startup-id redshift
+exec --no-startup-id redshift -l 50:14
 
 include /etc/sway/config.d/*
+include ~/.config/sway/`hostname`
