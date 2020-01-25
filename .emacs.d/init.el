@@ -330,7 +330,7 @@ There are two things you can do about this warning:
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-indexing-method 'hybrid) ;; Use .projectile files
-  (setq projectile-completion-system 'ivy))
+  (setq projectile-completion-system 'ido))
 
 (use-package uniquify
   :config
