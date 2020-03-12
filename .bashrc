@@ -10,6 +10,11 @@ export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 export VISUAL="emacsclient"
 export EDITOR=$VISUAL
 
+#Sway
+export QT_QPA_PLATFORM=wayland
+export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
+export _JAVA_AWT_WM_NONREPARENTING=1
+
 # Source aliases
 if [ -f ~/.aliases ]; then
 	. ~/.aliases
