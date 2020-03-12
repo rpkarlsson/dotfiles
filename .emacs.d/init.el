@@ -32,8 +32,8 @@ There are two things you can do about this warning:
 
 (use-package ace-window
   :ensure t
-  :config
-  (global-set-key (kbd "C-x o") 'ace-window))
+  :bind (("C-x o" . ace-window)
+         ("C-x O" . ace-delete-window)))
 
 (use-package better-defaults
   :ensure t)
@@ -45,7 +45,9 @@ There are two things you can do about this warning:
   ;; Do not treat C-m as RET
   (add-hook 'clojure-mode-hook (lambda ()
                                  (clj-refactor-mode 1)
+                                 (flycheck-mode)
                                  (cljr-add-keybindings-with-prefix "C-c C-m"))))
+
 
 (use-package clojure-mode
   :ensure t
@@ -53,13 +55,14 @@ There are two things you can do about this warning:
   :config
   (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
   (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
-  (add-hook 'clojure-mode-hook 'enable-paredit-mode)
-  (require 'flycheck-clj-kondo))
+  (add-hook 'clojure-mode-hook 'enable-paredit-mode))
+
+(use-package  flycheck-clj-kondo)
 
 (use-package cider
-  :ensure t
-  :pin melpa
-  ;; :load-path "~/Projects/cider"
+  ;; :ensure t
+  ;; :pin melpa
+  :load-path "~/Projects/cider"
   :config
   (setq cider-repl-pop-to-buffer-on-connect t))
 
@@ -476,6 +479,13 @@ There are two things you can do about this warning:
   (interactive)
   (find-file "~/Documents/work.org"))
 
+(defun sort-in-paren ()
+  (interactive)
+  (when-let (p (show-paren--default))
+    (sort-regexp-fields nil "\\(\\sw\\|\\s_\\)+" "\\&" (nth 0 p) (nth 2 p))))
+
+;; (global-set-key (kbd "C-c s p") 'sort-in-paren)
+
 (defun rk-toggle-window-split ()
   (interactive)
   (if (= (count-windows) 2)
@@ -522,9 +532,9 @@ There are two things you can do about this warning:
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
-   '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "51ec7bfa54adf5fff5d466248ea6431097f5a18224788d0bd7eb1257a4f7b773" "82358261c32ebedfee2ca0f87299f74008a2e5ba5c502bde7aaa15db20ee3731" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "285d1bf306091644fb49993341e0ad8bafe57130d9981b680c1dbd974475c5c7" "53760e1863395dedf3823564cbd2356e9345e6c74458dcc8ba171c039c7144ed" "e62b66040cb90a4171aa7368aced4ab9d8663956a62a5590252b0bc19adde6bd" "d97baf5a34c87b05508739505cad03438cde8efa2a0d350c7773f2a8bc26a50d" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "cc0dbb53a10215b696d391a90de635ba1699072745bf653b53774706999208e3" "3e335d794ed3030fefd0dbd7ff2d3555e29481fe4bbb0106ea11c660d6001767" default))
+   '("bffb799032a7404b33e431e6a1c46dc0ca62f54fdd20744a35a57c3f78586646" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "51ec7bfa54adf5fff5d466248ea6431097f5a18224788d0bd7eb1257a4f7b773" "82358261c32ebedfee2ca0f87299f74008a2e5ba5c502bde7aaa15db20ee3731" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "285d1bf306091644fb49993341e0ad8bafe57130d9981b680c1dbd974475c5c7" "53760e1863395dedf3823564cbd2356e9345e6c74458dcc8ba171c039c7144ed" "e62b66040cb90a4171aa7368aced4ab9d8663956a62a5590252b0bc19adde6bd" "d97baf5a34c87b05508739505cad03438cde8efa2a0d350c7773f2a8bc26a50d" "4780d7ce6e5491e2c1190082f7fe0f812707fc77455616ab6f8b38e796cbffa9" "cc0dbb53a10215b696d391a90de635ba1699072745bf653b53774706999208e3" "3e335d794ed3030fefd0dbd7ff2d3555e29481fe4bbb0106ea11c660d6001767" default))
  '(elfeed-feeds
-   '("https://feeds.therepl.net/therepl" "feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss" "https://lispcast.com/feed/podcast/thoughts-functional-programming/" "https://clojuredesign.club/index.xml" "https://nullprogram.com/feed/" "https://planet.emacslife.com/atom.xml" "http://fetchrss.com/rss/5ce3c0e18a93f86d578b45675ce3c0a78a93f812558b4567.xml" "http://endlessparentheses.com/atom.xml" "http://insideclojure.org/feed.xml"))
+   '("https://drewdevault.com/feed.xml" "https://feeds.therepl.net/therepl" "feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss" "https://lispcast.com/feed/podcast/thoughts-functional-programming/" "https://clojuredesign.club/index.xml" "https://nullprogram.com/feed/" "https://planet.emacslife.com/atom.xml" "http://fetchrss.com/rss/5ce3c0e18a93f86d578b45675ce3c0a78a93f812558b4567.xml" "http://endlessparentheses.com/atom.xml" "http://insideclojure.org/feed.xml"))
  '(evil-collection-outline-bind-tab-p nil)
  '(fci-rule-color "#eee8d5")
  '(highlight-changes-colors '("#d33682" "#6c71c4"))
@@ -567,7 +577,7 @@ There are two things you can do about this warning:
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-agenda-files '("~/Documents/work.org" "~/Documents/home.org"))
  '(package-selected-packages
-   '(tldr dumb-jump ripgrep centered-window company-lsp lsp-mode prescient ivy-posframe amx swiper-projectile counsel-projectile solarized-theme powerline org-bullets meson-mode counsel flx clojure-snippets company multi-term minions flycheck-clj-kondo emms-player-simple-mpv emms ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org cargo rust-mode go-mode buttercup pass clj-refactor elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))
+   '(eink-theme colorless-themes tldr dumb-jump ripgrep centered-window company-lsp lsp-mode prescient ivy-posframe amx swiper-projectile counsel-projectile solarized-theme powerline org-bullets meson-mode counsel flx clojure-snippets company multi-term minions flycheck-clj-kondo emms-player-simple-mpv emms ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org cargo rust-mode go-mode buttercup pass elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(prescient-history-length 50)

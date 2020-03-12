@@ -16,6 +16,11 @@ set $down j
 set $up k
 set $right L
 
+
+set $menu rofi -show run | xargs swaymsg exec --
+
+set $term gnome-terminal
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
