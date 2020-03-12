@@ -73,11 +73,38 @@ There are two things you can do about this warning:
   :ensure t
   :custom
   (cider-enhanced-cljs-completion-p nil)
+  (company-idle-delay 1)
   :config
   (global-company-mode)
-  ;; (add-hook 'clojurescript-mode-hook (lambda () (setq company-idle-delay nil)))
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode))
+
+;; (use-package company-irony
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'company-backends 'company-irony))
+
+;; (use-package irony
+;;   :ensure t
+;;   :config
+;;   (add-hook 'c-mode-hook 'irony-mode)
+;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+;; (use-package company-irony-c-headers
+;;   :ensure t)
+
+;; (use-package irony-eldoc
+;;   :ensure t)
+
+(use-package semantic
+  ;; :custom
+  ;; (ac-sources (append '(ac-source-semantic) ac-sources))
+  :config
+  (global-semantic-idle-scheduler-mode)
+  ;; (global-semantic-idle-completions-mode)
+  (global-semantic-decoration-mode)
+  (global-semantic-highlight-func-mode)
+  (global-semantic-show-unmatched-syntax-mode))
 
 ;; https://github.com/jacktasia/dumb-jump
 (use-package dumb-jump
@@ -87,10 +114,13 @@ There are two things you can do about this warning:
          ("M-g i" . dumb-jump-go-prompt)
          ("M-g x" . dumb-jump-go-prefer-external)
          ("M-g z" . dumb-jump-go-prefer-external-other-window))
-  :config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+  :custom
+  ;; (setq dumb-jump-selector 'ivy)
+  (dumb-jump-selector 'helm)
   :ensure)
 
-(use-package elfeed)
+(use-package elfeed
+  :ensure t)
 
 (use-package evil
   :ensure t
@@ -147,99 +177,24 @@ There are two things you can do about this warning:
 (use-package flycheck-clj-kondo
   :ensure t)
 
-;; (use-package ivy
-;;   :custom
-;;   (ivy-use-virtual-buffers t)
-;;   (ivy-count-format "(%d/%d) ")
-;;   (ivy-initial-inputs-alist nil)
-;;   (ivy-fixed-height-minibuffer nil)
-;;   (ivy-display-style 'fancy)
-;;   (ivy-re-builders-alist
-;;    '((counsel-projectile-ag . ivy--regex-plus))
-;;    '((t . ivy--regex-fuzzy)))
-;;   (ivy-mode 1))
+(use-package helm
+  :ensure t
+  :bind
+  (("M-x" . helm-M-x)
+   ("C-x b" . helm-buffers-list)
+   ("C-x C-f" . helm-find-files)
+   ("C-x r b" . helm-bookmarks)
+   ("M-y" . helm-show-kill-ring))
+  :custom
+  (helm-M-x-fuzzy-match t)
+  :config
+  ;; (helm-mode 1)
+  )
 
-;; (use-package ivy-posframe
-;;   :ensure t
-;;   :after ivy
-;;   :custom
-;;   (ivy-posframe-height-alist
-;;    '((swiper . 15)
-;;      (swiper-isearch . 15)
-;;      (t . 10)))
-;;   (ivy-posframe-display-functions-alist
-;;    '((complete-symbol . ivy-posframe-display-at-point)
-;;      (swiper . nil)
-;;      (swiper-isearch . nil)
-;;      (t . ivy-posframe-display-at-frame-center)))
-;;   :config
-;;   (ivy-posframe-mode 1))
-
-;; (use-package counsel
-;;   :ensure t
-;;   :after ivy
-;;   :bind
-;;   (("C-s" . swiper)
-;;    ("M-x" . counsel-M-x)
-;;    ("C-x C-f" . counsel-find-file)
-;;    ("<f1> f" . counsel-describe-function)
-;;    ("<f1> v" . counsel-describe-variable)
-;;    ("<f1> l" . counsel-find-library)
-;;    ("<f2> i" . counsel-info-lookup-symbol)
-;;    ("<f2> u" . counsel-unicode-char)
-;;    ("C-c c" . counsel-compile)
-;;    ("C-c g" . counsel-git)
-;;    ("C-c j" . counsel-git-grep)
-;;    ("C-c k" . counsel-ag)
-;;    ("C-x b" . ivy-switch-buffer) ;; counsel-ibuffer
-;;    ("C-x l" . counsel-locate)
-;;    ("C-S-o" . counsel-rhythmbox)
-;;    ("C-c C-r" . ivy-resume)
-;;    ("C-x C-d" . counsel-dired))
-;;   :config
-;;   (counsel-projectile-mode))
-
-;; (use-package counsel-projectile
-;;   :ensure t
-;;   :after counsel)
-
-;; (use-package prescient
-;;   :ensure t
-;;   :custom
-;;   (prescient-history-length 50)
-;;   (prescient-save-file "~/.emacs.d/prescient-items")
-;;   (prescient-filter-method '(fuzzy initialism regexp))
-;;   :config
-;;   (prescient-persist-mode 1))
-
-;; (use-package ivy-prescient
-;;   :ensure t
-;;   :after (prescient ivy)
-;;   :custom
-;;   (prescient-filter-method '(fuzzy regexp initialism))
-;;   ;; (ivy-prescient-sort-commands
-;;   ;;  '(:not swiper ivy-switch-buffer counsel-switch-buffer))
-;;   (ivy-prescient-retain-classic-highlighting t)
-;;   (ivy-prescient-enable-filtering t)
-;;   (ivy-prescient-enable-sorting t)
-;;   :config
-;; ;; (defun prot/ivy-prescient-filters (str)
-;; ;;   "Specify an exception for `prescient-filter-method'.
-
-;; ;; This new rule can be used to tailor the results of individual
-;; ;; Ivy-powered commands, using `ivy-prescient-re-builder'."
-;; ;;     (let ((prescient-filter-method '(literal regexp)))
-;; ;;       (ivy-prescient-re-builder str)))
-
-;; ;;   (setq ivy-re-builders-alist
-;; ;;         '((counsel-rg . prot/ivy-prescient-filters)
-;; ;;           (counsel-grep . prot/ivy-prescient-filters)
-;; ;;           (counsel-yank-pop . prot/ivy-prescient-filters)
-;; ;;           (swiper . prot/ivy-prescient-filters)
-;; ;;           (swiper-isearch . prot/ivy-prescient-filters)
-;; ;;           (swiper-all . prot/ivy-prescient-filters)
-;; ;;           (t . ivy-prescient-re-builder)))
-;;   (ivy-prescient-mode 1))
+(use-package helm-swoop
+  :ensure t
+  :bind
+  (("C-s" . helm-swoop)))
 
 (use-package magit
   :ensure t)
@@ -333,7 +288,8 @@ There are two things you can do about this warning:
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-indexing-method 'hybrid) ;; Use .projectile files
-  (setq projectile-completion-system 'ido))
+  ;; (setq projectile-completion-system 'ido)
+  (setq projectile-completion-system 'helm))
 
 (use-package uniquify
   :config
@@ -526,7 +482,7 @@ There are two things you can do about this warning:
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#839496"])
  '(cider-enhanced-cljs-completion-p nil)
  '(company-idle-delay 1)
- '(compilation-message-face 'default)
+ '(compilation-message-face (quote default))
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
@@ -537,45 +493,52 @@ There are two things you can do about this warning:
    '("https://drewdevault.com/feed.xml" "https://feeds.therepl.net/therepl" "feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss" "https://lispcast.com/feed/podcast/thoughts-functional-programming/" "https://clojuredesign.club/index.xml" "https://nullprogram.com/feed/" "https://planet.emacslife.com/atom.xml" "http://fetchrss.com/rss/5ce3c0e18a93f86d578b45675ce3c0a78a93f812558b4567.xml" "http://endlessparentheses.com/atom.xml" "http://insideclojure.org/feed.xml"))
  '(evil-collection-outline-bind-tab-p nil)
  '(fci-rule-color "#eee8d5")
- '(highlight-changes-colors '("#d33682" "#6c71c4"))
+ '(helm-M-x-fuzzy-match t t)
+ '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
  '(highlight-symbol-colors
    (--map
     (solarized-color-blend it "#fdf6e3" 0.25)
-    '("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2")))
+    (quote
+     ("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2"))))
  '(highlight-symbol-foreground-color "#586e75")
  '(highlight-tail-colors
-   '(("#eee8d5" . 0)
+   (quote
+    (("#eee8d5" . 0)
      ("#b3c34d" . 20)
      ("#6ccec0" . 30)
      ("#74adf5" . 50)
      ("#e1af4b" . 60)
      ("#fb7640" . 70)
      ("#ff699e" . 85)
-     ("#eee8d5" . 100)))
+     ("#eee8d5" . 100))))
  '(hl-bg-colors
-   '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
+   (quote
+    ("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d")))
  '(hl-fg-colors
-   '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
- '(hl-paren-colors '("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900"))
+   (quote
+    ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
+ '(hl-paren-colors (quote ("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900")))
  '(ivy-count-format "(%d/%d) ")
- '(ivy-display-style 'fancy)
+ '(ivy-display-style (quote fancy))
  '(ivy-fixed-height-minibuffer nil)
  '(ivy-initial-inputs-alist nil)
  '(ivy-mode 1)
  '(ivy-posframe-display-functions-alist
-   '((complete-symbol . ivy-posframe-display-at-point)
+   (quote
+    ((complete-symbol . ivy-posframe-display-at-point)
      (swiper)
      (swiper-isearch)
-     (t . ivy-posframe-display-at-frame-center)))
- '(ivy-posframe-height-alist '((swiper . 15) (swiper-isearch . 15) (t . 10)))
+     (t . ivy-posframe-display-at-frame-center))))
+ '(ivy-posframe-height-alist (quote ((swiper . 15) (swiper-isearch . 15) (t . 10))))
  '(ivy-prescient-enable-filtering t)
  '(ivy-prescient-enable-sorting t)
  '(ivy-prescient-retain-classic-highlighting t)
- '(ivy-re-builders-alist '((t . ivy--regex-fuzzy)) t)
+ '(ivy-re-builders-alist (quote ((t . ivy--regex-fuzzy))) t)
  '(ivy-use-virtual-buffers t)
  '(nrepl-message-colors
-   '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
- '(org-agenda-files '("~/Documents/work.org" "~/Documents/home.org"))
+   (quote
+    ("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4")))
+ '(org-agenda-files (quote ("~/Documents/work.org" "~/Documents/home.org")))
  '(package-selected-packages
    '(eink-theme colorless-themes tldr dumb-jump ripgrep centered-window company-lsp lsp-mode prescient ivy-posframe amx swiper-projectile counsel-projectile solarized-theme powerline org-bullets meson-mode counsel flx clojure-snippets company multi-term minions flycheck-clj-kondo emms-player-simple-mpv emms ob-mongo telephone-line project-explorer basic-theme minimal-theme evil-org-agenda org-evil evil-org cargo rust-mode go-mode buttercup pass elfeed ag request pdf-tools ace-window smex clojure-mode-extra-font-locking uniquify cider slime projectile nov org-plus-contrib evil-magit ido-completing-read+ ido-vertical-mode magit better-defaults evil-surround evil-collection 0blayout intero haskell-mode paredit use-package evil))
  '(pos-tip-background-color "#eee8d5")
@@ -583,7 +546,8 @@ There are two things you can do about this warning:
  '(prescient-history-length 50)
  '(prescient-save-file "~/.emacs.d/prescient-items")
  '(safe-local-variable-values
-   '((projectile-switch-project-action lambda nil
+   (quote
+    ((projectile-switch-project-action lambda nil
                                        (message "Runs"))
      (projectile-switch-project-action . rk-projectile-find)
      (projectile-switch-project-action quote rk-projectile-find)
@@ -599,14 +563,16 @@ There are two things you can do about this warning:
      (cider-preferred-build-tool quote shadow-cljs)
      (cider-default-cljs-repl . "Shadow")
      (cider-preferred-build-tool shadow-cljs)
-     (cider-preferred-build-tool 'shadow-cljs)
+     (cider-preferred-build-tool
+      (quote shadow-cljs))
      (cider-preferred-build-tool "shadow-cljs")
-     (cider-default-cljs-repl "Shadow")))
+     (cider-default-cljs-repl "Shadow"))))
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
-   '((20 . "#dc322f")
+   (quote
+    ((20 . "#dc322f")
      (40 . "#cb4366eb20b4")
      (60 . "#c1167942154f")
      (80 . "#b58900")
@@ -623,10 +589,11 @@ There are two things you can do about this warning:
      (300 . "#303498e7affc")
      (320 . "#2fa1947cbb9b")
      (340 . "#2c879008c736")
-     (360 . "#268bd2")))
+     (360 . "#268bd2"))))
  '(vc-annotate-very-old-color nil)
  '(weechat-color-list
-   '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496"))
+   (quote
+    (unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
  '(xterm-color-names
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#073642"])
  '(xterm-color-names-bright
