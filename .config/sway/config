@@ -19,7 +19,8 @@ set $right L
 
 set $menu rofi -show run | xargs swaymsg exec --
 
-set $term gnome-terminal
+# set $term gnome-terminal
+set $term alacritty
 
 ### Output configuration
 #
