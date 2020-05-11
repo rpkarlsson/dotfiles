@@ -1,2 +1,2 @@
-set $term urxvt256c-ml
+set $term alacritty
 set $menu dmenu_path | dmenu | xargs swaymsg exec --
