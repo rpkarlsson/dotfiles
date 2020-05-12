@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+grim -g "$(slurp)" $(xdg-user-dir PICTURES)/screenshot-$(date +%Y%m%d%H%M%S).png
