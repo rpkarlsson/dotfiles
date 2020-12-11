@@ -66,6 +66,7 @@
                        "https://corfield.org/atom.xml"
                        "https://drewdevault.com/feed.xml"
                        "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
+                       "https://feed.podbean.com/itrevolution/feed.xml"
                        "https://www.michaelnygard.com/atom.xml"
                        "https://insideclojure.org/feed.xml")))
 
