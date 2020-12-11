@@ -54,6 +54,7 @@
 ;; they are implemented.
 
 (load! "../emacs-backup/lib/mail.el")
+(setq exec-path (append exec-path '("~/bin/")))
 
 (after! org
   (setq org-duration-format (quote h:mm))
