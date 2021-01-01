@@ -13,6 +13,7 @@ alias wttr="curl wttr.in/vaxjo"
 # alias open="xdg-open"
 alias password="openssl rand -base64 32"
 alias sync-time="sudo systemctl restart ntpd"
+alias doom=~/.emacs.d/bin/doom
 
 e() { $EDITOR "${1:-.}"; }
 g() { git "${1:-status}"; }

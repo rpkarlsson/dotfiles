@@ -51,3 +51,6 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 
 (unpin! cider)
+
+(package! modus-operandi-theme)
+(package! olivetti)

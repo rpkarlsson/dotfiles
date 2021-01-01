@@ -26,6 +26,8 @@
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'doom-one)
 (setq doom-theme 'doom-solarized-light)
+;; (setq doom-theme 'doom-solarized-light)
+(setq doom-theme 'modus-operandi)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -53,22 +55,34 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
-(load! "../emacs-backup/lib/mail.el")
 (setq exec-path (append exec-path '("~/bin/")))
+
+(load! "~/emacs-backup/lib/mail.el")
 
 (after! org
   (setq org-duration-format (quote h:mm))
   (add-to-list 'org-capture-templates
                '("i" "Punch In" entry (file+headline "~/org/work.org" "log")
-                  "* %u \n %?\n\n" :clock-in t :clock-keep t :empty-lines 1)))
+                 "* %u \n %?\n\n" :clock-in t :clock-keep t :empty-lines 1)))
+
+(add-hook! 'org-mode-hook
+           #'doom-disable-line-numbers-h)
+
+(add-hook! 'org-mode-hook
+           #'olivetti-mode)
+
+(after! olivetti
+  (setq olivetti-body-width 100))
+
 (after! elfeed
-  (setq elfeed-feeds '("https://clojuredesign.club/index.xml"
-                       "https://corfield.org/atom.xml"
-                       "https://drewdevault.com/feed.xml"
-                       "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
-                       "https://feed.podbean.com/itrevolution/feed.xml"
-                       "https://www.michaelnygard.com/atom.xml"
-                       "https://insideclojure.org/feed.xml")))
+  (setq elfeed-feeds
+        '("https://clojuredesign.club/index.xml"
+          "https://corfield.org/atom.xml"
+          "https://drewdevault.com/feed.xml"
+          "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
+          "https://feed.podbean.com/itrevolution/feed.xml"
+          "https://www.michaelnygard.com/atom.xml"
+          "https://insideclojure.org/feed.xml")))
 
 (use-package paredit
   :hook ((clojure-mode . enable-paredit-mode)
@@ -83,11 +97,10 @@
    ((string-match "\\(Fri\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\)]" date) "8:00")
    (t "")))
 
-(defun sort-in-paren ()
+(defun rk-sort-syms-in-form ()
   (interactive)
   (when-let (p (show-paren--default))
     (sort-regexp-fields nil "\\(\\sw\\|\\s_\\)+" "\\&" (nth 0 p) (nth 2 p))))
-
 
 (setq calendar-week-start-day 1)
 
@@ -110,3 +123,14 @@
                           :sasl-username ,(+pass-get-user "irc/freenode.net")
                           :sasl-password (lambda (&rest _) (+pass-get-secret "irc/freenode.net"))
                           :channels ("#emacs"))))
+
+(setq! geiser-guile-binary "/usr/bin/guile2.2")
+
+(setq clojure-toplevel-inside-comment-form t)
+
+(evil-set-undo-system 'undo-tree)
+
+(defun rk-elfeed ()
+  (interactive)
+  (elfeed-update)
+  (elfeed))
