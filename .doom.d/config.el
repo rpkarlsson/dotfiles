@@ -84,6 +84,10 @@
           "https://www.michaelnygard.com/atom.xml"
           "https://insideclojure.org/feed.xml")))
 
+(use-package ivy-posframe
+  :init
+  (ivy-posframe-mode 1))
+
 (use-package paredit
   :hook ((clojure-mode . enable-paredit-mode)
          (clojurescript-mode . enable-paredit-mode)

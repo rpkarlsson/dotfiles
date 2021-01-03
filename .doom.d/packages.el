@@ -52,5 +52,6 @@
 
 (unpin! cider)
 
+(package! ivy-posframe)
 (package! modus-operandi-theme)
 (package! olivetti)
