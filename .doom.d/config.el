@@ -76,7 +76,8 @@
 
 (after! elfeed
   (setq elfeed-feeds
-        '("https://clojuredesign.club/index.xml"
+        '("https://architectelevator.com/feed.xml"
+          "https://clojuredesign.club/index.xml"
           "https://corfield.org/atom.xml"
           "https://drewdevault.com/feed.xml"
           "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
