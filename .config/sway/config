@@ -16,24 +16,32 @@ set $down j
 set $up k
 set $right L
 
-
-set $menu rofi -show run | xargs swaymsg exec --
+set $menu rofi -show run -theme solarized -font "hack 8" | xargs swaymsg exec --
 
 # set $term gnome-terminal
-set $term alacritty
+set $term foot
+# alacritty
 
 ### Output configuration
 #
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-# output * bg ~/Pictures/wallpaper.jpg fill
-output eDP-1 resolution 1920x1080 position 0,0
-output DP-6 resolution 2560x1440 position 1920,0
-# Conference room
-output DP-3 resolution 1920x1080 position 1920,0
 
-# workspace 10 output eDP-1
-# workspace 1 output DP-6
-# workspace 1 output DP-6
+#output eDP-1 resolution 1920x1080 position 0,0
+
+output * bg ~/Pictures/wallpaper.jpg fill
+
+
+# Work
+#output 'Lenovo Group Limited LEN P24h-20 V3076NKZ' resolution 2560x1440 position 0,0
+#output 'Lenovo Group Limited P24h-10 U4P00001' resolution 2560x1440 position 2560,0
+#workspace 9 output 'Lenovo Group Limited LEN P24h-20 V3076NKZ'
+#workspace 0 output 'Lenovo Group Limited P24h-10 U4P00001'
+#output 'eDP-1' resolution 1920x1080 position 0,0
+
+# Home 
+  output 'eDP-5' resolution 1920x1080 position 2560,0
+  output 'DP-3' resolution 2560x1440 position 0,0
+  output 'Lenovo Group Limited LEN P24h-20 V306YF61' transform 270
+  workspace 1 output 'Dell Inc. DELL U2520D BK11923'
 
 ### Idle configuration
 #
@@ -205,8 +213,8 @@ bindsym $mod+r mode "resize"
 #
 # Sound
 #
-bindsym XF86AudioRaiseVolume exec amixer -q set Master 5%+
-bindsym XF86AudioLowerVolume exec amixer -q set Master 5%-
+bindsym XF86AudioRaiseVolume exec amixer -q set Master 1%+
+bindsym XF86AudioLowerVolume exec amixer -q set Master 1%-
 bindsym XF86AudioMute exec amixer -q set Master toggle
 
 #
@@ -219,28 +227,33 @@ bindsym XF86MonBrightnessDown exec light -U 2
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
-bar {
-    position top
+#bar {
+#    position top
+#
+#    status_command while ~/.config/sway/status.sh; do sleep 1; done
+#
+#    # When the status_command prints a new line to stdout, swaybar updates.
+#    # The default just shows the current date and time.
+#    # status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+#
+#    colors {
+#        statusline #ffffff
+#        background #323232
+#        inactive_workspace #32323200 #32323200 #5c5c5c
+#    }
+#}
 
-    status_command while ~/.config/sway/status.sh; do sleep 1; done
-
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    # status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
-
-    colors {
-        statusline #ffffff
-        background #323232
-        inactive_workspace #32323200 #32323200 #5c5c5c
-    }
-}
-
-default_border pixel 5
+default_border pixel 5 
 default_floating_border normal
 hide_edge_borders smart
+gaps inner 5 
 
 # Startup
-exec --no-startup-id redshift -l 50:14
+# exec --no-startup-id redshift -l 50:14
+exec --no-startup-id nm-applet --indicator
+exec --no-startup-id waybar
+exec --no-startup-id gammastep
+exec --no-startup-id mako
 
 include /etc/sway/config.d/*
 include ~/.config/sway/`hostname`

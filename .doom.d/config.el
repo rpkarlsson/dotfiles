@@ -24,12 +24,15 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-one-light)
 ;; (setq doom-theme 'nord-light)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
+
+(setq org-duration-format (quote h:mm))
+
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -53,12 +56,15 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
-(load! "../emacs-backup/lib/mail.el")
+;; (load! "../emacs-backup/lib/mail.el")
+;;
+(after! cider
+  (setq clojure-toplevel-inside-comment-form t))
 
 (after! org
   (setq org-duration-format (quote h:mm))
   (add-to-list 'org-capture-templates
-               '("i" "Punch In" entry (file+headline "~/org/work.org" "log")
+               '("i" "Punch In" entry (file+headline "~/org/notes.org" "log")
                   "* %u \n %?\n\n" :clock-in t :clock-keep t :empty-lines 1)))
 (after! elfeed
   (setq elfeed-feeds '("https://clojuredesign.club/index.xml"
@@ -66,7 +72,8 @@
                        "https://drewdevault.com/feed.xml"
                        "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
                        "https://www.michaelnygard.com/atom.xml"
-                       "https://insideclojure.org/feed.xml")))
+                       "https://insideclojure.org/feed.xml"
+                       "https://clojure.org/feed.xml")))
 
 (use-package paredit
   :hook ((clojure-mode . enable-paredit-mode)
@@ -74,12 +81,15 @@
          (scheme-mode . enable-paredit-mode)
          (emacs-lisp-mode . enable-paredit-mode)))
 
-(defun jh/hours-a-day (date time)
-  (cond
-   ((string-equal time "0:01") "")
-   ((string-match ".*]!" date) "")
-   ((string-match "\\(Fri\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\)]" date) "8:00")
-   (t "")))
+;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-tsx-mode))
+
+
+;; (defun jh/hours-a-day (date time)
+;;   (cond
+;;    ((string-equal time "0:01") "")
+;;    ((string-match ".*]!" date) "")
+;;    ((string-match "\\(Fri\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\)]" date) "8:00")
+;;    (t "")))
 
 (defun sort-in-paren ()
   (interactive)

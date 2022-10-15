@@ -5,16 +5,6 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-# User specific environment
-export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-export VISUAL="emacsclient"
-export EDITOR=$VISUAL
-
-#Sway
-export QT_QPA_PLATFORM=wayland
-export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
-export _JAVA_AWT_WM_NONREPARENTING=1
-
 # Source aliases
 if [ -f ~/.aliases ]; then
 	. ~/.aliases
@@ -43,7 +33,13 @@ bind "set show-all-if-ambiguous on"
 # only start cycling full results on the second Tab press
 bind "set menu-complete-display-prefix on"
 
+# History
+shopt -s histappend
+HISTCONTROL=ignoredups:ignorespace:erasedups
+HISTIGNORE="l"
 # Source profile
 if [ -f ~/.profile ]; then
 	. ~/.profile
 fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

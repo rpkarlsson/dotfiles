@@ -1,5 +1,4 @@
 alias df="df -h"
-alias dnf="sudo dnf"
 alias e="efn"
 alias hidden="ls -d .??*"
 alias l="ls -lh"
@@ -8,16 +7,8 @@ alias ln="ln -v"
 alias mkdir="mkdir -p"
 alias reboot="sudo reboot"
 alias shutdown="sudo shutdown -h now"
-#alias start-mongo="sudo systemctl start mongod"
-alias start-mongo="sudo systemctl start docker && (cd ~/Projects/panorama/ && sudo docker-compose start panoramamongo)"
-alias stop-mongo="(cd ~/Projects/panorama/ && sudo docker-compose stop panoramamongo)"
-alias mongod-up="sudo mongod --config /etc/mongod.conf"
 alias v="$VISUAL"
-alias wttr="curl wttr.in/vaxjo"
-# alias open="xdg-open"
-alias password="openssl rand -base64 32"
-alias sync-time="sudo systemctl restart ntpd"
+alias rk-password="openssl rand -base64 32"
 
 e() { $EDITOR "${1:-.}"; }
 g() { git "${1:-status}"; }
-ytcast() { youtube-dl -o - $1 | castnow --quiet - ; }
